@@ -1,0 +1,43 @@
+name: Weekly Menu WhatsApp Reminder
+
+on:
+  schedule:
+    # Every Monday at 00:00 UTC
+    - cron: '0 0 * * 1'
+  workflow_dispatch: # Allow manual trigger
+
+jobs:
+  send-reminder:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Fetch weekly menu from Supabase
+        id: menu
+        run: |
+          # Get current week's Monday
+          MONDAY=$(date -d "last monday" +%Y-%m-%d 2>/dev/null || date -v-monday +%Y-%m-%d)
+
+          # Fetch menu slots with recipe names
+          RESPONSE=$(curl -s \
+            "${{ secrets.VITE_SUPABASE_URL }}/rest/v1/weekly_menus?week_start=eq.${MONDAY}&select=id,menu_slots(day_of_week,meal_type,custom_meal,recipe:recipes(name))" \
+            -H "apikey: ${{ secrets.SUPABASE_SERVICE_KEY }}" \
+            -H "Authorization: Bearer ${{ secrets.SUPABASE_SERVICE_KEY }}")
+
+          echo "response=$RESPONSE" >> $GITHUB_OUTPUT
+
+      - name: Format and send WhatsApp message
+        run: |
+          DAYS=("Lunes" "Martes" "Miercoles" "Jueves" "Viernes" "Sabado" "Domingo")
+
+          # Build message (simplified - parse JSON with jq in production)
+          MESSAGE="🍽 *Menu de la semana*%0A%0A"
+          MESSAGE+="Consulta el menu completo en:%0A"
+          MESSAGE+="${{ secrets.APP_URL }}%0A"
+
+          # Send to first phone number
+          curl -s "https://api.callmebot.com/whatsapp.php?phone=${{ secrets.WHATSAPP_PHONE_1 }}&text=${MESSAGE}&apikey=${{ secrets.CALLMEBOT_KEY_1 }}"
+
+          # Send to second phone number (if configured)
+          if [ -n "${{ secrets.WHATSAPP_PHONE_2 }}" ]; then
+            sleep 2
+            curl -s "https://api.callmebot.com/whatsapp.php?phone=${{ secrets.WHATSAPP_PHONE_2 }}&text=${MESSAGE}&apikey=${{ secrets.CALLMEBOT_KEY_2 }}"
+          fi
