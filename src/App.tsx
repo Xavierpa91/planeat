@@ -14,8 +14,8 @@ function AuthenticatedApp() {
 
   if (loading) {
     return (
-      <div className="min-h-svh bg-slate-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-svh bg-bg flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }
@@ -42,8 +42,8 @@ function App() {
 
   if (loading) {
     return (
-      <div className="min-h-svh bg-slate-50 flex items-center justify-center">
-        <div className="w-8 h-8 border-2 border-green-500 border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-svh bg-bg flex items-center justify-center">
+        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
       </div>
     )
   }

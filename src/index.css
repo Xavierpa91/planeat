@@ -1,20 +1,59 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-primary: #22c55e;
-  --color-primary-dark: #16a34a;
-  --color-primary-light: #bbf7d0;
-  --color-surface: #f8fafc;
-  --color-surface-dark: #1e293b;
-  --color-card: #ffffff;
-  --color-card-dark: #334155;
+  --color-accent: oklch(0.68 0.16 55);
+  --color-accent-strong: oklch(0.58 0.17 55);
+  --color-accent-soft: oklch(0.94 0.08 55);
+  --color-accent-ink: oklch(0.35 0.10 55);
+  --color-surface: #ffffff;
+  --color-surface-2: #fbfbf9;
+  --color-ink: #0f1411;
+  --color-ink-2: #2a3330;
+  --color-muted: #6b7570;
+  --color-muted-2: #9aa39e;
+  --color-line: #e7e8e3;
+  --color-line-2: #eef0eb;
+  --color-danger: oklch(0.62 0.18 25);
+  --color-bg: #f7f8f6;
+
+  --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+}
+
+* {
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
   margin: 0;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: var(--font-sans);
+  background: var(--color-bg);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 #root {
   min-height: 100svh;
 }
+
+.pressable {
+  transition: transform 120ms ease, background-color 120ms ease;
+}
+.pressable:active {
+  transform: scale(0.97);
+}
+
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
+
+@keyframes slideUp {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+.animate-slide-up { animation: slideUp 320ms cubic-bezier(.2,.8,.2,1); }
+.animate-fade { animation: fadeIn 220ms ease; }

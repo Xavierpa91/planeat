@@ -1,23 +1,37 @@
-import { ChefHat } from 'lucide-react'
+import { CalendarDays, ShoppingCart, Users, ChefHat } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 
 export function Login() {
   const { signInWithGoogle } = useAuth()
 
   return (
-    <div className="min-h-svh bg-slate-50 flex items-center justify-center p-4">
-      <div className="bg-white rounded-2xl border border-slate-200 p-8 w-full max-w-sm text-center space-y-6">
+    <div className="min-h-svh bg-bg flex items-center justify-center p-4">
+      <div className="bg-surface rounded-2xl border border-line p-8 w-full max-w-sm text-center space-y-6">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-16 h-16 bg-green-100 rounded-2xl flex items-center justify-center">
-            <ChefHat className="w-8 h-8 text-green-600" />
+          <div className="w-16 h-16 bg-accent-soft rounded-2xl flex items-center justify-center">
+            <ChefHat className="w-8 h-8 text-accent-strong" />
           </div>
-          <h1 className="text-2xl font-bold text-slate-800">PlanEat</h1>
-          <p className="text-sm text-slate-500">Planifica tus menus semanales</p>
+          <h1 className="text-2xl font-extrabold text-ink tracking-[-0.02em]">PlanEat</h1>
+          <p className="text-sm text-muted">Planifica tus menus semanales</p>
+        </div>
+
+        {/* Feature pillars */}
+        <div className="grid grid-cols-3 gap-3">
+          {[
+            { icon: CalendarDays, label: 'Planifica' },
+            { icon: ShoppingCart, label: 'Compra' },
+            { icon: Users, label: 'Comparte' },
+          ].map(({ icon: Icon, label }) => (
+            <div key={label} className="flex flex-col items-center gap-1.5 py-3 rounded-xl bg-bg">
+              <Icon className="w-5 h-5 text-accent" />
+              <span className="text-xs font-semibold text-ink-2">{label}</span>
+            </div>
+          ))}
         </div>
 
         <button
           onClick={signInWithGoogle}
-          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-slate-200 rounded-xl text-sm font-medium text-slate-700 hover:bg-slate-50 transition-colors"
+          className="w-full flex items-center justify-center gap-3 px-4 py-3 border border-line rounded-full text-sm font-semibold text-ink hover:bg-bg transition-colors pressable"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
             <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z" />

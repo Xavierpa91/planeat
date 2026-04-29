@@ -36,18 +36,14 @@ export function useHousehold(userId: string | undefined) {
   const createHousehold = async (name: string) => {
     if (!userId) return
 
-    const { data: hh, error } = await supabase
-      .from('households')
-      .insert({ name })
-      .select()
-      .single()
+    // Use DB function to create household + add member in one transaction
+    // This avoids RLS issues where SELECT policy requires membership
+    const { data: newId, error } = await supabase
+      .rpc('create_household', { household_name: name })
 
     if (error) throw error
 
-    await supabase
-      .from('household_members')
-      .insert({ household_id: hh.id, user_id: userId, role: 'admin' })
-
+    const hh: Household = { id: newId, name, created_at: new Date().toISOString() }
     setHousehold(hh)
     return hh
   }

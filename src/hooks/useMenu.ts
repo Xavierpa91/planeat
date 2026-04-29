@@ -1,7 +1,7 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
 import { formatDate } from '../lib/week'
-import type { WeeklyMenu, MenuSlot } from '../types'
+import type { WeeklyMenu, MenuSlot, MealType } from '../types'
 
 export function useMenu(householdId: string | undefined, weekStart: Date) {
   const [menu, setMenu] = useState<WeeklyMenu | null>(null)
@@ -50,7 +50,7 @@ export function useMenu(householdId: string | undefined, weekStart: Date) {
     fetchMenu()
   }, [fetchMenu])
 
-  const setSlot = async (dayOfWeek: number, mealType: 'lunch' | 'dinner', recipeId: string | null, customMeal: string | null) => {
+  const setSlot = async (dayOfWeek: number, mealType: MealType, recipeId: string | null, customMeal: string | null) => {
     if (!menu) return
 
     // Check if slot exists
@@ -76,7 +76,7 @@ export function useMenu(householdId: string | undefined, weekStart: Date) {
     await fetchMenu()
   }
 
-  const clearSlot = async (dayOfWeek: number, mealType: 'lunch' | 'dinner') => {
+  const clearSlot = async (dayOfWeek: number, mealType: MealType) => {
     const existing = slots.find(s => s.day_of_week === dayOfWeek && s.meal_type === mealType)
     if (existing) {
       await supabase.from('menu_slots').delete().eq('id', existing.id)

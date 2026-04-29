@@ -1,9 +1,10 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
+import { getDefaultRecipes } from '../lib/defaultRecipes'
 import type { Recipe } from '../types'
 
 export function useRecipes(householdId: string | undefined) {
-  const [recipes, setRecipes] = useState<Recipe[]>([])
+  const [userRecipes, setUserRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchRecipes = useCallback(async () => {
@@ -16,7 +17,7 @@ export function useRecipes(householdId: string | undefined) {
       .eq('household_id', householdId)
       .order('name')
 
-    setRecipes(data ?? [])
+    setUserRecipes(data ?? [])
     setLoading(false)
   }, [householdId])
 
@@ -24,12 +25,18 @@ export function useRecipes(householdId: string | undefined) {
     fetchRecipes()
   }, [fetchRecipes])
 
-  const addRecipe = async (name: string, ingredients: string[]) => {
+  // Merge user recipes with default recipes
+  const recipes = [...userRecipes, ...getDefaultRecipes()]
+
+  const addRecipe = async (name: string, ingredients: string[], icon?: string) => {
     if (!householdId) return
+
+    const insertData: Record<string, string> = { name, household_id: householdId }
+    if (icon) insertData.icon = icon
 
     const { data: recipe, error } = await supabase
       .from('recipes')
-      .insert({ name, household_id: householdId })
+      .insert(insertData)
       .select()
       .single()
 
@@ -45,8 +52,11 @@ export function useRecipes(householdId: string | undefined) {
     return recipe
   }
 
-  const updateRecipe = async (id: string, name: string, ingredients: string[]) => {
-    await supabase.from('recipes').update({ name }).eq('id', id)
+  const updateRecipe = async (id: string, name: string, ingredients: string[], icon?: string) => {
+    const updateData: Record<string, string | null> = { name }
+    updateData.icon = icon ?? null
+
+    await supabase.from('recipes').update(updateData).eq('id', id)
 
     // Replace all ingredients
     await supabase.from('recipe_ingredients').delete().eq('recipe_id', id)
@@ -66,5 +76,38 @@ export function useRecipes(householdId: string | undefined) {
     await fetchRecipes()
   }
 
-  return { recipes, loading, addRecipe, updateRecipe, deleteRecipe, refetch: fetchRecipes }
+  // Copy a default recipe to user's DB and return the real ID
+  const materializeDefaultRecipe = async (defaultRecipeId: string): Promise<string | null> => {
+    if (!householdId) return null
+
+    const defaultRecipe = getDefaultRecipes().find(r => r.id === defaultRecipeId)
+    if (!defaultRecipe) return null
+
+    // Check if already materialized (same name in user recipes)
+    const existing = userRecipes.find(r => r.name === defaultRecipe.name)
+    if (existing) return existing.id
+
+    // Create in DB
+    const insertData: Record<string, string> = { name: defaultRecipe.name, household_id: householdId }
+    if (defaultRecipe.icon) insertData.icon = defaultRecipe.icon
+
+    const { data: recipe, error } = await supabase
+      .from('recipes')
+      .insert(insertData)
+      .select()
+      .single()
+
+    if (error || !recipe) return null
+
+    if (defaultRecipe.ingredients && defaultRecipe.ingredients.length > 0) {
+      await supabase
+        .from('recipe_ingredients')
+        .insert(defaultRecipe.ingredients.map(ing => ({ recipe_id: recipe.id, name: ing.name })))
+    }
+
+    await fetchRecipes()
+    return recipe.id
+  }
+
+  return { recipes, loading, addRecipe, updateRecipe, deleteRecipe, materializeDefaultRecipe, refetch: fetchRecipes }
 }

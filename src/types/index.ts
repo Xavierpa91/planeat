@@ -14,6 +14,8 @@ export interface Recipe {
   id: string
   household_id: string
   name: string
+  icon?: string
+  is_default?: boolean
   created_at: string
   ingredients?: RecipeIngredient[]
 }
@@ -31,11 +33,13 @@ export interface WeeklyMenu {
   created_at: string
 }
 
+export type MealType = 'breakfast' | 'lunch' | 'snack' | 'dinner'
+
 export interface MenuSlot {
   id: string
   menu_id: string
   day_of_week: number // 0=lun, 6=dom
-  meal_type: 'lunch' | 'dinner'
+  meal_type: MealType
   recipe_id: string | null
   custom_meal: string | null
   recipe?: Recipe
@@ -43,7 +47,11 @@ export interface MenuSlot {
 
 export const DAYS = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'] as const
 
-export const MEAL_TYPES = {
+export const ALL_MEAL_TYPES: Record<MealType, string> = {
+  breakfast: 'Desayuno',
   lunch: 'Comida',
+  snack: 'Merienda',
   dinner: 'Cena',
-} as const
+}
+
+export const DEFAULT_MEAL_TYPES: MealType[] = ['lunch', 'dinner']
