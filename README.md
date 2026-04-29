@@ -1,73 +1,60 @@
-# React + TypeScript + Vite
+# PlanEat
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Weekly meal planner PWA for planning menus, managing recipes, and generating shopping lists.
 
-Currently, two official plugins are available:
+**Live app:** [https://xavierpa91.github.io/planeat/](https://xavierpa91.github.io/planeat/)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Features
 
-## React Compiler
+- **Weekly menu planner** - Drag meals into a 7-day grid with configurable meal types (breakfast, lunch, snack, dinner)
+- **Recipe management** - Create your own recipes or use 12 built-in Spanish recipes
+- **Smart shopping list** - Auto-generated from your weekly menu, grouped by category (Carnes, Pescados, Lacteos, etc.)
+- **Shared households** - Share menus and recipes with family members via Google login
+- **Copy menus** - Replicate any week's menu to another week
+- **PWA** - Install on your phone from the browser, works offline-capable
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Tech Stack
 
-## Expanding the ESLint configuration
+- **Frontend:** React 19 + TypeScript + Vite
+- **Styling:** Tailwind CSS v4 + Plus Jakarta Sans
+- **Backend:** Supabase (PostgreSQL + Auth + RLS)
+- **Hosting:** GitHub Pages
+- **CI/CD:** GitHub Actions
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+## Development
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
+npm run dev
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+Create a `.env` file with your Supabase credentials:
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
-
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
 ```
+VITE_SUPABASE_URL=https://your-project.supabase.co
+VITE_SUPABASE_ANON_KEY=your-anon-key
+```
+
+## Database Setup
+
+Run `supabase/migrations/001_initial.sql` in the Supabase SQL Editor, then:
+
+```sql
+-- Additional setup
+ALTER TABLE recipes ADD COLUMN IF NOT EXISTS icon text;
+
+-- RPC for household creation
+CREATE OR REPLACE FUNCTION create_household(household_name text)
+RETURNS uuid AS $$
+DECLARE new_id uuid;
+BEGIN
+  INSERT INTO households (name) VALUES (household_name) RETURNING id INTO new_id;
+  INSERT INTO household_members (household_id, user_id, role) VALUES (new_id, auth.uid(), 'admin');
+  RETURN new_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+```
+
+## License
+
+Private project.
