@@ -1,8 +1,9 @@
 import { useState } from 'react'
-import { Plus, Pencil, Trash2 } from 'lucide-react'
+import { Plus, Pencil, Trash2, ShieldAlert } from 'lucide-react'
 import { RecipeForm } from '../components/RecipeForm'
 import { FoodIcon } from '../components/FoodIcon'
 import { useRecipes } from '../hooks/useRecipes'
+import { ALLERGENS } from '../lib/allergens'
 import type { Recipe } from '../types'
 
 interface RecipesPageProps {
@@ -16,6 +17,7 @@ export function RecipesPage({ householdId }: RecipesPageProps) {
   const [showForm, setShowForm] = useState(false)
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null)
   const [activeTab, setActiveTab] = useState<RecipeTab>('mine')
+  const [showAllergens, setShowAllergens] = useState(false)
 
   const userRecipes = recipes.filter(r => !r.is_default)
   const defaultRecipes = recipes.filter(r => r.is_default)
@@ -61,7 +63,17 @@ export function RecipesPage({ householdId }: RecipesPageProps) {
         )}
       </div>
 
-      {/* Tabs */}
+      {/* Allergens toggle + Tabs */}
+      <button
+        onClick={() => setShowAllergens(!showAllergens)}
+        className={`flex items-center gap-1.5 text-xs font-semibold pressable transition-colors ${
+          showAllergens ? 'text-accent-strong' : 'text-muted'
+        }`}
+      >
+        <ShieldAlert className="w-3.5 h-3.5" />
+        Mostrar alergenos
+      </button>
+
       <div className="flex gap-1 bg-bg rounded-full p-1">
         <button
           onClick={() => setActiveTab('mine')}
@@ -118,6 +130,18 @@ export function RecipesPage({ householdId }: RecipesPageProps) {
                       <p className="text-xs text-muted mt-1">
                         {recipe.ingredients.map(i => i.name).join(', ')}
                       </p>
+                    )}
+                    {showAllergens && recipe.allergens && recipe.allergens.length > 0 && (
+                      <div className="flex flex-wrap gap-1 mt-1.5">
+                        {recipe.allergens.map(a => {
+                          const info = ALLERGENS.find(al => al.id === a)
+                          return info ? (
+                            <span key={a} className="text-[10px] bg-bg px-1.5 py-0.5 rounded-full text-muted" title={info.label}>
+                              {info.icon} {info.label}
+                            </span>
+                          ) : null
+                        })}
+                      </div>
                     )}
                   </div>
                 </div>

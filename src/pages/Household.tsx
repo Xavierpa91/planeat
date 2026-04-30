@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink } from 'lucide-react'
+import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink, Globe } from 'lucide-react'
 import { useHousehold } from '../hooks/useHousehold'
+import { useI18n } from '../lib/i18n'
 import {
   getNotificationPrefs,
   setNotificationPrefs,
@@ -21,6 +22,9 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteSent, setInviteSent] = useState(false)
   const [creating, setCreating] = useState(false)
+
+  // i18n
+  const { locale, setLocale } = useI18n()
 
   // Notification prefs
   const [notifPrefs, setNotifPrefs] = useState<NotificationPrefs>(getNotificationPrefs)
@@ -240,6 +244,32 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
           <ExternalLink className="w-3.5 h-3.5" />
           Mas info sobre CallMeBot
         </a>
+      </div>
+
+      {/* Language */}
+      <div className="bg-surface rounded-2xl border border-line p-4 space-y-4">
+        <h3 className="font-semibold text-ink flex items-center gap-2">
+          <Globe className="w-4 h-4 text-accent" />
+          Idioma / Language
+        </h3>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setLocale('es')}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-colors pressable ${
+              locale === 'es' ? 'bg-accent text-white' : 'bg-bg text-muted border border-line'
+            }`}
+          >
+            🇪🇸 Espanol
+          </button>
+          <button
+            onClick={() => setLocale('en')}
+            className={`flex-1 flex items-center justify-center gap-2 px-4 py-2.5 rounded-full text-sm font-semibold transition-colors pressable ${
+              locale === 'en' ? 'bg-accent text-white' : 'bg-bg text-muted border border-line'
+            }`}
+          >
+            🇬🇧 English
+          </button>
+        </div>
       </div>
     </div>
   )

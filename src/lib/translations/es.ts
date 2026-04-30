@@ -1,0 +1,143 @@
+export const es: Record<string, string> = {
+  // Layout
+  'nav.menu': 'Menu',
+  'nav.recipes': 'Recetas',
+  'nav.shopping': 'Compra',
+  'nav.household': 'Hogar',
+  'header.signout': 'Cerrar sesion',
+
+  // Login
+  'login.title': 'PlanEat',
+  'login.subtitle': 'Planifica tus menus semanales',
+  'login.plan': 'Planifica',
+  'login.shop': 'Compra',
+  'login.share': 'Comparte',
+  'login.google': 'Continuar con Google',
+
+  // Menu page
+  'menu.lunchAndDinner': 'Comida y Cena',
+  'menu.meals': 'comidas',
+  'menu.compactView': 'Vista Compacta',
+  'menu.normalView': 'Vista Normal',
+  'menu.copyToWeek': 'Copiar menu a otra semana',
+  'menu.copyTo': 'Copiar menu a...',
+  'menu.selectDate': 'Selecciona una fecha de la semana destino. Se usara el lunes de esa semana.',
+  'menu.copy': 'Copiar',
+  'menu.cancel': 'Cancelar',
+  'menu.add': 'Anadir',
+  'menu.searchRecipe': 'Buscar receta...',
+  'menu.myRecipes': 'Mis recetas',
+  'menu.planeatRecipes': 'Recetas PlanEat',
+  'menu.noRecipes': 'No hay recetas',
+  'menu.customPlaceholder': 'O escribe algo personalizado...',
+
+  // Meal types
+  'meal.breakfast': 'Desayuno',
+  'meal.lunch': 'Comida',
+  'meal.snack': 'Merienda',
+  'meal.dinner': 'Cena',
+
+  // Days
+  'day.mon': 'Lunes',
+  'day.tue': 'Martes',
+  'day.wed': 'Miercoles',
+  'day.thu': 'Jueves',
+  'day.fri': 'Viernes',
+  'day.sat': 'Sabado',
+  'day.sun': 'Domingo',
+
+  // Recipes page
+  'recipes.title': 'Recetas',
+  'recipes.new': 'Nueva',
+  'recipes.myRecipes': 'Mis recetas',
+  'recipes.planeatRecipes': 'Recetas PlanEat',
+  'recipes.noRecipesYet': 'No hay recetas todavia',
+  'recipes.createFirst': 'Crea tu primera receta para empezar',
+  'recipes.noDefaults': 'No hay recetas por defecto',
+  'recipes.deleteConfirm': 'Eliminar',
+  'recipes.showAllergens': 'Mostrar alergenos',
+
+  // Recipe form
+  'recipeForm.name': 'Nombre de la receta',
+  'recipeForm.icon': 'Icono',
+  'recipeForm.ingredients': 'Ingredientes',
+  'recipeForm.addIngredient': 'Anadir ingrediente',
+  'recipeForm.save': 'Guardar',
+  'recipeForm.cancel': 'Cancelar',
+  'recipeForm.allergens': 'Alergenos',
+
+  // Shopping page
+  'shopping.title': 'Lista de la compra',
+  'shopping.noItems': 'No hay ingredientes en el menu de esta semana',
+  'shopping.addRecipes': 'Anade recetas con ingredientes al menu',
+  'shopping.products': 'productos',
+  'shopping.copyList': 'Copiar lista',
+  'shopping.share': 'Compartir',
+  'shopping.copied': 'Copiado!',
+  'shopping.sent': 'Enviado!',
+
+  // Shopping categories
+  'cat.carnes': 'Carnes',
+  'cat.pescados': 'Pescados',
+  'cat.lacteos': 'Lacteos',
+  'cat.verduras': 'Verduras',
+  'cat.frutas': 'Frutas',
+  'cat.bebidas': 'Bebidas',
+  'cat.pasta': 'Pasta y Cereales',
+  'cat.conservas': 'Conservas',
+  'cat.especias': 'Especias y Condimentos',
+  'cat.otros': 'Otros',
+
+  // Household page
+  'household.createTitle': 'Crea tu hogar',
+  'household.createDesc': 'Un hogar es donde compartes menus y recetas',
+  'household.namePlaceholder': 'Nombre del hogar (ej: Casa)',
+  'household.create': 'Crear hogar',
+  'household.creating': 'Creando...',
+  'household.inviteMember': 'Invitar miembro',
+  'household.emailPlaceholder': 'email@ejemplo.com',
+  'household.inviteSent': 'Invitacion enviada',
+  'household.notifications': 'Notificaciones',
+  'household.weeklyReminder': 'Recordatorio semanal',
+  'household.notifBlocked': 'Notificaciones bloqueadas. Activalas en los ajustes de tu navegador.',
+  'household.notifDay': 'Dia',
+  'household.notifHour': 'Hora',
+  'household.notifDesc': 'Recibiras una notificacion para planificar el menu de la semana.',
+  'household.whatsapp': 'WhatsApp',
+  'household.whatsappDesc': 'Recibe un recordatorio semanal por WhatsApp con el enlace al menu. Usa CallMeBot (gratuito).',
+  'household.whatsappSetup': 'Como configurarlo:',
+  'household.whatsappStep1': 'Envia',
+  'household.whatsappStep1Msg': 'I allow callmebot to send me messages',
+  'household.whatsappStep1To': 'al +34 644 52 74 88 en WhatsApp',
+  'household.whatsappStep2': 'Recibiras tu API key personal',
+  'household.whatsappStep3': 'Configuralo en los secrets del repositorio de GitHub',
+  'household.whatsappMore': 'Mas info sobre CallMeBot',
+  'household.language': 'Idioma',
+
+  // Allergens
+  'allergen.gluten': 'Gluten',
+  'allergen.lacteos': 'Lacteos',
+  'allergen.huevo': 'Huevo',
+  'allergen.pescado': 'Pescado',
+  'allergen.crustaceos': 'Crustaceos',
+  'allergen.frutos_secos': 'Frutos secos',
+  'allergen.soja': 'Soja',
+  'allergen.apio': 'Apio',
+  'allergen.mostaza': 'Mostaza',
+  'allergen.moluscos': 'Moluscos',
+
+  // Recipe categories (for filters)
+  'recipeCat.all': 'Todas',
+  'recipeCat.carnes': 'Carnes',
+  'recipeCat.pescados': 'Pescados',
+  'recipeCat.legumbres': 'Legumbres',
+  'recipeCat.pasta': 'Pasta y Arroces',
+  'recipeCat.ensaladas': 'Ensaladas',
+  'recipeCat.huevos': 'Huevos',
+  'recipeCat.sopas': 'Sopas y Cremas',
+  'recipeCat.rapidas': 'Rapidas',
+
+  // General
+  'general.thisWeek': 'Esta semana',
+  'general.delete': 'Eliminar',
+}

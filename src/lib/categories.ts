@@ -30,6 +30,7 @@ const CATEGORY_MAP: Record<string, string> = {
   mejillones: 'Pescados',
   calamares: 'Pescados',
   calamar: 'Pescados',
+  pulpo: 'Pescados',
   langostinos: 'Pescados',
   pescado: 'Pescados',
 
@@ -78,6 +79,9 @@ const CATEGORY_MAP: Record<string, string> = {
   esparragos: 'Verduras',
   calabaza: 'Verduras',
   albahaca: 'Verduras',
+  setas: 'Verduras',
+  puerros: 'Verduras',
+  quinoa: 'Verduras',
 
   // Frutas
   limon: 'Frutas',
@@ -85,6 +89,7 @@ const CATEGORY_MAP: Record<string, string> = {
   platano: 'Frutas',
   manzana: 'Frutas',
   naranja: 'Frutas',
+  frutas: 'Frutas',
 
   // Bebidas
   'leche de coco': 'Bebidas',
@@ -102,6 +107,10 @@ const CATEGORY_MAP: Record<string, string> = {
   'pan rallado': 'Pasta y Cereales',
   'pan tostado': 'Pasta y Cereales',
   'pan de hamburguesa': 'Pasta y Cereales',
+  'pan de molde': 'Pasta y Cereales',
+  cuscus: 'Pasta y Cereales',
+  granola: 'Pasta y Cereales',
+  'tortillas de maiz': 'Pasta y Cereales',
   harina: 'Pasta y Cereales',
   fideos: 'Pasta y Cereales',
   tortillas: 'Pasta y Cereales',
@@ -129,6 +138,7 @@ const CATEGORY_MAP: Record<string, string> = {
   mostaza: 'Especias y Condimentos',
   ketchup: 'Especias y Condimentos',
   vinagre: 'Especias y Condimentos',
+  'aceite de oliva': 'Especias y Condimentos',
 }
 
 export const CATEGORIES = [

@@ -1,6 +1,7 @@
 import { HashRouter, Routes, Route, Navigate } from 'react-router-dom'
 import { useAuth } from './hooks/useAuth'
 import { useHousehold } from './hooks/useHousehold'
+import { I18nProvider } from './lib/i18n'
 import { Layout } from './components/Layout'
 import { Login } from './pages/Login'
 import { MenuPage } from './pages/Menu'
@@ -49,11 +50,13 @@ function App() {
   }
 
   return (
-    <HashRouter>
-      <Routes>
-        <Route path="*" element={user ? <AuthenticatedApp /> : <Login />} />
-      </Routes>
-    </HashRouter>
+    <I18nProvider>
+      <HashRouter>
+        <Routes>
+          <Route path="*" element={user ? <AuthenticatedApp /> : <Login />} />
+        </Routes>
+      </HashRouter>
+    </I18nProvider>
   )
 }
 

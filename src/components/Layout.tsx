@@ -1,5 +1,7 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { CalendarDays, ChefHat, ShoppingCart, LogOut, Users } from 'lucide-react'
+
+const logoUrl = import.meta.env.BASE_URL + 'icons/logo.png'
 import { useAuth } from '../hooks/useAuth'
 
 export function Layout() {
@@ -10,7 +12,7 @@ export function Layout() {
       {/* Header */}
       <header className="bg-surface border-b border-line px-4 py-3 flex items-center justify-between">
         <h1 className="text-xl font-extrabold text-accent-strong tracking-[-0.02em] flex items-center gap-2">
-          <ChefHat className="w-6 h-6" />
+          <img src={logoUrl} alt="PlanEat" className="w-8 h-8 rounded-lg" />
           PlanEat
         </h1>
         <div className="flex items-center gap-3">

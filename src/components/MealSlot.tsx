@@ -1,4 +1,5 @@
 import { Plus, X } from 'lucide-react'
+import { FoodIcon } from './FoodIcon'
 import type { MenuSlot as MenuSlotType } from '../types'
 
 interface MealSlotProps {
@@ -12,16 +13,18 @@ interface MealSlotProps {
 
 export function MealSlot({ label, slot, compact, onEdit, onClear }: MealSlotProps) {
   const mealName = slot?.recipe?.name ?? slot?.custom_meal
+  const recipeIcon = slot?.recipe?.icon
 
   if (compact) {
     return (
-      <div className="p-1.5 flex items-center">
+      <div className="p-1.5 flex items-center gap-1">
         {mealName ? (
           <button
             onClick={onEdit}
-            className="text-xs text-ink text-left hover:text-accent-strong transition-colors truncate w-full"
+            className="text-xs text-ink text-left hover:text-accent-strong transition-colors truncate w-full flex items-center gap-1"
           >
-            {mealName}
+            {recipeIcon && <FoodIcon kind={recipeIcon} size={14} />}
+            <span className="truncate">{mealName}</span>
           </button>
         ) : (
           <button
@@ -42,9 +45,10 @@ export function MealSlot({ label, slot, compact, onEdit, onClear }: MealSlotProp
         <div className="flex items-start justify-between gap-1">
           <button
             onClick={onEdit}
-            className="text-sm text-ink text-left hover:text-accent-strong transition-colors flex-1"
+            className="text-sm text-ink text-left hover:text-accent-strong transition-colors flex-1 flex items-center gap-1.5"
           >
-            {mealName}
+            {recipeIcon && <FoodIcon kind={recipeIcon} size={16} />}
+            <span>{mealName}</span>
           </button>
           <button
             onClick={onClear}

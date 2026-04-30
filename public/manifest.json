@@ -4,10 +4,15 @@
   "description": "Planifica tus menus semanales",
   "start_url": "/planeat/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#22c55e",
+  "background_color": "#ffe6d3",
+  "theme_color": "#df9484",
   "orientation": "portrait",
   "icons": [
+    {
+      "src": "/planeat/icons/logo.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    },
     {
       "src": "/planeat/icons/icon-192.png",
       "sizes": "192x192",

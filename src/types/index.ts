@@ -14,7 +14,11 @@ export interface Recipe {
   id: string
   household_id: string
   name: string
+  name_en?: string
   icon?: string
+  category?: string
+  prep_minutes?: number
+  allergens?: string[]
   is_default?: boolean
   created_at: string
   ingredients?: RecipeIngredient[]

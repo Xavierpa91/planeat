@@ -17,8 +17,11 @@ interface WeekGridProps {
 export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, onClearSlot, onMaterializeDefault }: WeekGridProps) {
   const [editingSlot, setEditingSlot] = useState<{ day: number; meal: MealType } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
+  const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [customMeal, setCustomMeal] = useState('')
   const [saving, setSaving] = useState(false)
+
+  const FILTER_CATEGORIES = ['Carnes', 'Pescados', 'Legumbres', 'Pasta y Arroces', 'Ensaladas', 'Huevos', 'Sopas y Cremas', 'Rapidas']
 
   const getSlot = (day: number, meal: MealType) =>
     slots.find(s => s.day_of_week === day && s.meal_type === meal)
@@ -52,9 +55,12 @@ export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, 
     setCustomMeal('')
   }
 
-  const filteredRecipes = recipes.filter(r =>
-    r.name.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredRecipes = recipes.filter(r => {
+    const matchesSearch = !searchQuery || r.name.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesCategory = !categoryFilter
+      || (categoryFilter === 'Rapidas' ? (r.prep_minutes != null && r.prep_minutes <= 15) : r.category === categoryFilter)
+    return matchesSearch && matchesCategory
+  })
 
   const defaultRecipes = filteredRecipes.filter(r => r.is_default)
   const userRecipes = filteredRecipes.filter(r => !r.is_default)
@@ -115,6 +121,27 @@ export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, 
                 className="mt-2 w-full px-3 py-2 border border-line rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent"
                 autoFocus
               />
+              <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar">
+                <button
+                  onClick={() => setCategoryFilter(null)}
+                  className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors pressable ${
+                    !categoryFilter ? 'bg-accent text-white border-accent' : 'bg-surface border-line text-muted'
+                  }`}
+                >
+                  Todas
+                </button>
+                {FILTER_CATEGORIES.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setCategoryFilter(categoryFilter === cat ? null : cat)}
+                    className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors pressable ${
+                      categoryFilter === cat ? 'bg-accent text-white border-accent' : 'bg-surface border-line text-muted'
+                    }`}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
             </div>
             <div className="overflow-y-auto flex-1 p-2">
               {saving && (
