@@ -13,7 +13,7 @@ interface MenuPageProps {
 
 export function MenuPage({ householdId }: MenuPageProps) {
   const [currentWeek, setCurrentWeek] = useState(() => getMonday())
-  const { slots, loading, setSlot, clearSlot, copyMenuToWeek } = useMenu(householdId, currentWeek)
+  const { slots, loading, setSlot, clearSlot, addExtraRecipe, removeExtraRecipe, copyMenuToWeek } = useMenu(householdId, currentWeek)
   const { recipes, materializeDefaultRecipe } = useRecipes(householdId)
   const [showCopyPicker, setShowCopyPicker] = useState(false)
   const [copyTarget, setCopyTarget] = useState('')
@@ -126,6 +126,8 @@ export function MenuPage({ householdId }: MenuPageProps) {
             compact={viewMode === 'compact'}
             onSetSlot={setSlot}
             onClearSlot={clearSlot}
+            onAddExtra={addExtraRecipe}
+            onRemoveExtra={removeExtraRecipe}
             onMaterializeDefault={materializeDefaultRecipe}
           />
 

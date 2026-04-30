@@ -11,11 +11,13 @@ interface WeekGridProps {
   compact?: boolean
   onSetSlot: (day: number, mealType: MealType, recipeId: string | null, customMeal: string | null) => Promise<void>
   onClearSlot: (day: number, mealType: MealType) => Promise<void>
+  onAddExtra?: (day: number, mealType: MealType, recipeId: string) => Promise<void>
+  onRemoveExtra?: (extraId: string) => Promise<void>
   onMaterializeDefault?: (defaultRecipeId: string) => Promise<string | null>
 }
 
-export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, onClearSlot, onMaterializeDefault }: WeekGridProps) {
-  const [editingSlot, setEditingSlot] = useState<{ day: number; meal: MealType } | null>(null)
+export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, onClearSlot, onAddExtra, onRemoveExtra, onMaterializeDefault }: WeekGridProps) {
+  const [editingSlot, setEditingSlot] = useState<{ day: number; meal: MealType; addingExtra?: boolean } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [customMeal, setCustomMeal] = useState('')
@@ -42,9 +44,15 @@ export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, 
       recipeId = realId
     }
 
-    await onSetSlot(editingSlot.day, editingSlot.meal, recipeId, null)
+    if (editingSlot.addingExtra && onAddExtra) {
+      await onAddExtra(editingSlot.day, editingSlot.meal, recipeId)
+    } else {
+      await onSetSlot(editingSlot.day, editingSlot.meal, recipeId, null)
+    }
+
     setEditingSlot(null)
     setSearchQuery('')
+    setCategoryFilter(null)
     setSaving(false)
   }
 
@@ -91,9 +99,17 @@ export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, 
                     onEdit={() => {
                       setEditingSlot({ day: dayIndex, meal: mealType })
                       setSearchQuery('')
+                      setCategoryFilter(null)
                       setCustomMeal('')
                     }}
                     onClear={() => onClearSlot(dayIndex, mealType)}
+                    onAddExtra={onAddExtra ? () => {
+                      setEditingSlot({ day: dayIndex, meal: mealType, addingExtra: true })
+                      setSearchQuery('')
+                      setCategoryFilter(null)
+                      setCustomMeal('')
+                    } : undefined}
+                    onRemoveExtra={onRemoveExtra}
                   />
                 )
               })}
@@ -112,6 +128,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, 
             <div className="p-4 border-b border-line-2">
               <h3 className="font-bold text-ink">
                 {DAYS[editingSlot.day]} - {ALL_MEAL_TYPES[editingSlot.meal]}
+                {editingSlot.addingExtra && <span className="text-accent ml-2 text-sm font-normal">+ otro plato</span>}
               </h3>
               <input
                 type="text"

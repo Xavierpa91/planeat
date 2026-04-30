@@ -39,6 +39,14 @@ export interface WeeklyMenu {
 
 export type MealType = 'breakfast' | 'lunch' | 'snack' | 'dinner'
 
+export interface MenuSlotRecipe {
+  id: string
+  slot_id: string
+  recipe_id: string
+  position: number
+  recipe?: Recipe
+}
+
 export interface MenuSlot {
   id: string
   menu_id: string
@@ -47,6 +55,7 @@ export interface MenuSlot {
   recipe_id: string | null
   custom_meal: string | null
   recipe?: Recipe
+  extra_recipes?: MenuSlotRecipe[]
 }
 
 export const DAYS = ['Lunes', 'Martes', 'Miercoles', 'Jueves', 'Viernes', 'Sabado', 'Domingo'] as const
