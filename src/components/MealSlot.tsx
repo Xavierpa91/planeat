@@ -4,13 +4,36 @@ import type { MenuSlot as MenuSlotType } from '../types'
 interface MealSlotProps {
   label: string
   slot: MenuSlotType | undefined
+  compact?: boolean
   isEditing: boolean
   onEdit: () => void
   onClear: () => void
 }
 
-export function MealSlot({ label, slot, onEdit, onClear }: MealSlotProps) {
+export function MealSlot({ label, slot, compact, onEdit, onClear }: MealSlotProps) {
   const mealName = slot?.recipe?.name ?? slot?.custom_meal
+
+  if (compact) {
+    return (
+      <div className="p-1.5 flex items-center">
+        {mealName ? (
+          <button
+            onClick={onEdit}
+            className="text-xs text-ink text-left hover:text-accent-strong transition-colors truncate w-full"
+          >
+            {mealName}
+          </button>
+        ) : (
+          <button
+            onClick={onEdit}
+            className="text-xs text-muted-2 hover:text-accent transition-colors"
+          >
+            <Plus className="w-3.5 h-3.5" />
+          </button>
+        )}
+      </div>
+    )
+  }
 
   return (
     <div className="p-3 min-h-[60px] flex flex-col">

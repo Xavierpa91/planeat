@@ -8,12 +8,13 @@ interface WeekGridProps {
   slots: MenuSlotType[]
   recipes: Recipe[]
   activeMealTypes: MealType[]
+  compact?: boolean
   onSetSlot: (day: number, mealType: MealType, recipeId: string | null, customMeal: string | null) => Promise<void>
   onClearSlot: (day: number, mealType: MealType) => Promise<void>
   onMaterializeDefault?: (defaultRecipeId: string) => Promise<string | null>
 }
 
-export function WeekGrid({ slots, recipes, activeMealTypes, onSetSlot, onClearSlot, onMaterializeDefault }: WeekGridProps) {
+export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, onClearSlot, onMaterializeDefault }: WeekGridProps) {
   const [editingSlot, setEditingSlot] = useState<{ day: number; meal: MealType } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [customMeal, setCustomMeal] = useState('')
@@ -65,9 +66,9 @@ export function WeekGrid({ slots, recipes, activeMealTypes, onSetSlot, onClearSl
         const hasMeals = daySlots.some(s => s != null)
 
         return (
-          <div key={dayIndex} className={`rounded-2xl border overflow-hidden ${hasMeals ? 'bg-accent-soft border-accent/20' : 'bg-surface border-line'}`}>
-            <div className={`px-3 py-2 border-b ${hasMeals ? 'border-accent/10' : 'border-line-2'}`}>
-              <span className="font-bold text-sm text-ink">{dayName}</span>
+          <div key={dayIndex} className={`${compact ? 'rounded-lg' : 'rounded-2xl'} border overflow-hidden ${hasMeals ? 'bg-accent-soft border-accent/20' : 'bg-surface border-line'}`}>
+            <div className={`${compact ? 'px-2 py-1' : 'px-3 py-2'} border-b ${hasMeals ? 'border-accent/10' : 'border-line-2'}`}>
+              <span className={`font-bold ${compact ? 'text-xs' : 'text-sm'} text-ink`}>{dayName}</span>
             </div>
             <div className={`grid divide-x ${hasMeals ? 'divide-accent/10' : 'divide-line-2'}`} style={{ gridTemplateColumns: `repeat(${activeMealTypes.length}, 1fr)` }}>
               {activeMealTypes.map(mealType => {
@@ -79,6 +80,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, onSetSlot, onClearSl
                     key={mealType}
                     label={ALL_MEAL_TYPES[mealType]}
                     slot={slot}
+                    compact={compact}
                     isEditing={isEditing}
                     onEdit={() => {
                       setEditingSlot({ day: dayIndex, meal: mealType })

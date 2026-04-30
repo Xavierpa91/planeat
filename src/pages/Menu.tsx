@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { ChevronLeft, ChevronRight, Copy, Calendar, Settings2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Copy, Calendar, Settings2, Minimize2, Maximize2 } from 'lucide-react'
 import { WeekGrid } from '../components/WeekGrid'
 import { useMenu } from '../hooks/useMenu'
 import { useRecipes } from '../hooks/useRecipes'
@@ -19,6 +19,15 @@ export function MenuPage({ householdId }: MenuPageProps) {
   const [copyTarget, setCopyTarget] = useState('')
   const [activeMealTypes, setActiveMealTypes] = useState<MealType[]>(DEFAULT_MEAL_TYPES)
   const [showMealConfig, setShowMealConfig] = useState(false)
+  const [viewMode, setViewMode] = useState<'normal' | 'compact'>(() => {
+    return (localStorage.getItem('planeat-view-mode') as 'normal' | 'compact') ?? 'normal'
+  })
+
+  const toggleView = () => {
+    const next = viewMode === 'normal' ? 'compact' : 'normal'
+    setViewMode(next)
+    localStorage.setItem('planeat-view-mode', next)
+  }
 
   const goToPrevWeek = () => setCurrentWeek(prev => shiftWeek(prev, -1))
   const goToNextWeek = () => setCurrentWeek(prev => shiftWeek(prev, 1))
@@ -65,7 +74,7 @@ export function MenuPage({ householdId }: MenuPageProps) {
         </button>
       </div>
 
-      {/* Meal types config toggle */}
+      {/* Meal types config toggle + view mode */}
       <div className="flex items-center justify-between">
         <button
           onClick={() => setShowMealConfig(!showMealConfig)}
@@ -75,6 +84,13 @@ export function MenuPage({ householdId }: MenuPageProps) {
           {activeMealTypes.length === 2 && activeMealTypes.includes('lunch') && activeMealTypes.includes('dinner')
             ? 'Comida y Cena'
             : `${activeMealTypes.length} comidas`}
+        </button>
+        <button
+          onClick={toggleView}
+          className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink transition-colors pressable"
+        >
+          {viewMode === 'compact' ? <Maximize2 className="w-3.5 h-3.5" /> : <Minimize2 className="w-3.5 h-3.5" />}
+          {viewMode === 'compact' ? 'Vista Normal' : 'Vista Compacta'}
         </button>
       </div>
 
@@ -107,6 +123,7 @@ export function MenuPage({ householdId }: MenuPageProps) {
             slots={slots}
             recipes={recipes}
             activeMealTypes={activeMealTypes}
+            compact={viewMode === 'compact'}
             onSetSlot={setSlot}
             onClearSlot={clearSlot}
             onMaterializeDefault={materializeDefaultRecipe}
