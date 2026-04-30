@@ -1,19 +1,28 @@
 import { NavLink, Outlet } from 'react-router-dom'
 import { CalendarDays, ChefHat, ShoppingCart, LogOut, Users } from 'lucide-react'
+import { useAuth } from '../hooks/useAuth'
+import { useI18n } from '../lib/i18n'
 
 const logoUrl = import.meta.env.BASE_URL + 'icons/logo.png'
-import { useAuth } from '../hooks/useAuth'
 
 export function Layout() {
   const { user, signOut } = useAuth()
+  const { t } = useI18n()
+
+  const navItems = [
+    { to: '/', icon: CalendarDays, labelKey: 'nav.menu' },
+    { to: '/recipes', icon: ChefHat, labelKey: 'nav.recipes' },
+    { to: '/shopping', icon: ShoppingCart, labelKey: 'nav.shopping' },
+    { to: '/household', icon: Users, labelKey: 'nav.household' },
+  ]
 
   return (
     <div className="min-h-svh bg-bg flex flex-col">
       {/* Header */}
       <header className="bg-surface border-b border-line px-4 py-3 flex items-center justify-between">
-        <h1 className="text-xl font-extrabold text-accent-strong tracking-[-0.02em] flex items-center gap-2">
+        <h1 className="text-xl font-extrabold tracking-[-0.02em] flex items-center gap-2">
           <img src={logoUrl} alt="PlanEat" className="w-8 h-8 rounded-lg" />
-          PlanEat
+          <span><span className="text-accent-strong">Plan</span><span className="text-ink">Eat</span></span>
         </h1>
         <div className="flex items-center gap-3">
           <span className="text-sm text-muted hidden sm:inline">
@@ -22,7 +31,7 @@ export function Layout() {
           <button
             onClick={signOut}
             className="text-muted-2 hover:text-ink-2 transition-colors"
-            title="Cerrar sesion"
+            title={t('header.signout')}
           >
             <LogOut className="w-5 h-5" />
           </button>
@@ -34,14 +43,9 @@ export function Layout() {
         <Outlet />
       </main>
 
-      {/* Bottom nav (material-style with pill active indicator) */}
+      {/* Bottom nav */}
       <nav className="fixed bottom-0 left-0 right-0 bg-surface border-t border-line flex justify-around py-2 z-50">
-        {[
-          { to: '/', icon: CalendarDays, label: 'Menu' },
-          { to: '/recipes', icon: ChefHat, label: 'Recetas' },
-          { to: '/shopping', icon: ShoppingCart, label: 'Compra' },
-          { to: '/household', icon: Users, label: 'Hogar' },
-        ].map(({ to, icon: Icon, label }) => (
+        {navItems.map(({ to, icon: Icon, labelKey }) => (
           <NavLink
             key={to}
             to={to}
@@ -60,7 +64,7 @@ export function Layout() {
                 >
                   <Icon className="w-5 h-5" />
                 </span>
-                <span className={isActive ? 'font-semibold' : ''}>{label}</span>
+                <span className={isActive ? 'font-semibold' : ''}>{t(labelKey)}</span>
               </>
             )}
           </NavLink>

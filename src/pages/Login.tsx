@@ -1,5 +1,7 @@
-import { CalendarDays, ShoppingCart, Users, ChefHat } from 'lucide-react'
+import { CalendarDays, ShoppingCart, Users } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
+
+const logoUrl = import.meta.env.BASE_URL + 'icons/logo.png'
 
 export function Login() {
   const { signInWithGoogle } = useAuth()
@@ -8,10 +10,10 @@ export function Login() {
     <div className="min-h-svh bg-bg flex items-center justify-center p-4">
       <div className="bg-surface rounded-2xl border border-line p-8 w-full max-w-sm text-center space-y-6">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-16 h-16 bg-accent-soft rounded-2xl flex items-center justify-center">
-            <ChefHat className="w-8 h-8 text-accent-strong" />
-          </div>
-          <h1 className="text-2xl font-extrabold text-ink tracking-[-0.02em]">PlanEat</h1>
+          <img src={logoUrl} alt="PlanEat" className="w-20 h-20 rounded-2xl" />
+          <h1 className="text-2xl font-extrabold tracking-[-0.02em]">
+            <span className="text-accent-strong">Plan</span><span className="text-ink">Eat</span>
+          </h1>
           <p className="text-sm text-muted">Planifica tus menus semanales</p>
         </div>
 

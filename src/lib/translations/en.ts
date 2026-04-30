@@ -29,7 +29,9 @@ export const en: Record<string, string> = {
   'menu.myRecipes': 'My recipes',
   'menu.planeatRecipes': 'PlanEat Recipes',
   'menu.noRecipes': 'No recipes',
-  'menu.customPlaceholder': 'Or type something custom...',
+  'menu.customPlaceholder': 'Type your custom dish name',
+  'menu.extraDish': 'Extra dish',
+  'menu.addSlots': 'Add more meal slots',
 
   // Meal types
   'meal.breakfast': 'Breakfast',

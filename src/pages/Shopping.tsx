@@ -3,6 +3,7 @@ import { ChevronLeft, ChevronRight } from 'lucide-react'
 import { ShoppingList } from '../components/ShoppingList'
 import { useMenu } from '../hooks/useMenu'
 import { getMonday, shiftWeek, formatWeekRange } from '../lib/week'
+import { useI18n } from '../lib/i18n'
 
 interface ShoppingPageProps {
   householdId: string
@@ -11,12 +12,13 @@ interface ShoppingPageProps {
 export function ShoppingPage({ householdId }: ShoppingPageProps) {
   const [currentWeek, setCurrentWeek] = useState(() => getMonday())
   const { loading, getWeekIngredients } = useMenu(householdId, currentWeek)
+  const { t } = useI18n()
 
   const ingredients = getWeekIngredients()
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-extrabold text-ink tracking-[-0.02em]">Lista de compra</h2>
+      <h2 className="text-lg font-extrabold text-ink tracking-[-0.02em]">{t('shopping.title')}</h2>
 
       {/* Week navigation */}
       <div className="flex items-center justify-between">

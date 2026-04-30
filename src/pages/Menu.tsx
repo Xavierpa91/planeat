@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { ChevronLeft, ChevronRight, Copy, Calendar, Settings2, Minimize2, Maximize2 } from 'lucide-react'
 import { WeekGrid } from '../components/WeekGrid'
 import { useMenu } from '../hooks/useMenu'
@@ -19,6 +19,7 @@ export function MenuPage({ householdId }: MenuPageProps) {
   const [copyTarget, setCopyTarget] = useState('')
   const [activeMealTypes, setActiveMealTypes] = useState<MealType[]>(DEFAULT_MEAL_TYPES)
   const [showMealConfig, setShowMealConfig] = useState(false)
+  const datePickerRef = useRef<HTMLInputElement>(null)
   const [viewMode, setViewMode] = useState<'normal' | 'compact'>(() => {
     return (localStorage.getItem('planeat-view-mode') as 'normal' | 'compact') ?? 'normal'
   })
@@ -31,7 +32,6 @@ export function MenuPage({ householdId }: MenuPageProps) {
 
   const goToPrevWeek = () => setCurrentWeek(prev => shiftWeek(prev, -1))
   const goToNextWeek = () => setCurrentWeek(prev => shiftWeek(prev, 1))
-  const goToCurrentWeek = () => setCurrentWeek(getMonday())
 
   const toggleMealType = (mt: MealType) => {
     setActiveMealTypes(prev => {
@@ -61,13 +61,25 @@ export function MenuPage({ householdId }: MenuPageProps) {
         <button onClick={goToPrevWeek} className="p-2 text-muted-2 hover:text-ink-2 transition-colors pressable">
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <div className="text-center">
+        <div className="text-center relative">
           <button
-            onClick={goToCurrentWeek}
+            onClick={() => datePickerRef.current?.showPicker()}
             className="text-sm font-bold text-ink hover:text-accent-strong transition-colors"
           >
             {formatWeekRange(currentWeek)}
           </button>
+          <input
+            ref={datePickerRef}
+            type="date"
+            className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+            value={formatDate(currentWeek)}
+            onChange={e => {
+              if (e.target.value) {
+                const picked = new Date(e.target.value + 'T00:00:00')
+                setCurrentWeek(getMonday(picked))
+              }
+            }}
+          />
         </div>
         <button onClick={goToNextWeek} className="p-2 text-muted-2 hover:text-ink-2 transition-colors pressable">
           <ChevronRight className="w-5 h-5" />
@@ -81,9 +93,7 @@ export function MenuPage({ householdId }: MenuPageProps) {
           className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink transition-colors pressable"
         >
           <Settings2 className="w-3.5 h-3.5" />
-          {activeMealTypes.length === 2 && activeMealTypes.includes('lunch') && activeMealTypes.includes('dinner')
-            ? 'Comida y Cena'
-            : `${activeMealTypes.length} comidas`}
+          Anadir mas franjas
         </button>
         <button
           onClick={toggleView}
@@ -124,6 +134,7 @@ export function MenuPage({ householdId }: MenuPageProps) {
             recipes={recipes}
             activeMealTypes={activeMealTypes}
             compact={viewMode === 'compact'}
+            weekStart={currentWeek}
             onSetSlot={setSlot}
             onClearSlot={clearSlot}
             onAddExtra={addExtraRecipe}

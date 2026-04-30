@@ -6,6 +6,7 @@ import {
 } from 'lucide-react'
 import { getCategory, CATEGORIES, CATEGORY_META } from '../lib/categories'
 import { shareList } from '../lib/share'
+import { useI18n } from '../lib/i18n'
 import type { LucideIcon } from 'lucide-react'
 
 const CATEGORY_ICONS: Record<string, LucideIcon> = {
@@ -26,6 +27,7 @@ interface ShoppingListProps {
 }
 
 export function ShoppingList({ ingredients }: ShoppingListProps) {
+  const { t } = useI18n()
   const [checked, setChecked] = useState<Set<string>>(new Set())
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
   const [copied, setCopied] = useState(false)
@@ -63,8 +65,8 @@ export function ShoppingList({ ingredients }: ShoppingListProps) {
   if (ingredients.length === 0) {
     return (
       <div className="text-center py-12 text-muted">
-        <p className="text-sm">No hay ingredientes en el menu de esta semana</p>
-        <p className="text-xs mt-1 text-muted-2">Anade recetas con ingredientes al menu</p>
+        <p className="text-sm">{t('shopping.noItems')}</p>
+        <p className="text-xs mt-1 text-muted-2">{t('shopping.addRecipes')}</p>
       </div>
     )
   }
@@ -82,17 +84,25 @@ export function ShoppingList({ ingredients }: ShoppingListProps) {
 
   return (
     <div className="space-y-3">
-      {/* Progress bar */}
-      <div className="bg-surface rounded-2xl border border-line p-4 space-y-2">
-        <div className="flex justify-between text-sm">
-          <span className="font-semibold text-ink">{checked.size}/{ingredients.length} productos</span>
-          <span className="font-bold text-accent">{progress}%</span>
+      {/* Progress - circular like v2 prototype */}
+      <div className="bg-surface rounded-2xl border border-line p-4 flex items-center gap-4">
+        <div
+          className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
+          style={{
+            background: `conic-gradient(var(--color-accent) ${progress * 3.6}deg, var(--color-line) 0)`,
+          }}
+        >
+          <div className="w-9 h-9 rounded-full bg-surface flex items-center justify-center text-xs font-bold text-ink">
+            {progress}%
+          </div>
         </div>
-        <div className="h-2.5 bg-bg rounded-full overflow-hidden">
-          <div
-            className="h-full bg-accent rounded-full transition-all duration-500 ease-out"
-            style={{ width: `${progress}%` }}
-          />
+        <div className="flex-1">
+          <div className="text-sm font-bold text-ink">
+            {checked.size} / {ingredients.length} {t('shopping.products')}
+          </div>
+          <div className="text-xs text-muted mt-0.5">
+            {progress === 100 ? 'Lista completa!' : 'De las comidas de esta semana'}
+          </div>
         </div>
       </div>
 
@@ -103,14 +113,14 @@ export function ShoppingList({ ingredients }: ShoppingListProps) {
           className="flex-1 flex items-center justify-center gap-2 px-4 py-2 border border-line rounded-full text-sm text-ink-2 hover:bg-bg transition-colors pressable"
         >
           <Copy className="w-4 h-4" />
-          {copied ? 'Copiado!' : 'Copiar lista'}
+          {copied ? t('shopping.copied') : t('shopping.copyList')}
         </button>
         <button
           onClick={handleShare}
           className="flex-1 flex items-center justify-center gap-2 px-4 py-2 bg-accent text-white rounded-full text-sm font-semibold hover:bg-accent-strong transition-colors pressable"
         >
           <Share2 className="w-4 h-4" />
-          {shared ? 'Enviado!' : 'Compartir'}
+          {shared ? t('shopping.sent') : t('shopping.share')}
         </button>
       </div>
 

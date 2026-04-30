@@ -71,9 +71,9 @@ export function MealSlot({ label, slot, compact, onEdit, onClear, onAddExtra, on
 
           {/* Extra recipes */}
           {extras.map(extra => (
-            <div key={extra.id} className="flex items-center justify-between gap-1 pl-1">
-              <span className="text-xs text-muted flex items-center gap-1">
-                {extra.recipe?.icon && <FoodIcon kind={extra.recipe.icon} size={13} />}
+            <div key={extra.id} className="flex items-center justify-between gap-1">
+              <span className="text-sm text-ink flex items-center gap-1.5">
+                {extra.recipe?.icon && <FoodIcon kind={extra.recipe.icon} size={16} />}
                 {extra.recipe?.name}
               </span>
               {onRemoveExtra && (

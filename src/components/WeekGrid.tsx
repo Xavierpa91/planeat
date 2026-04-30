@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { MealSlot } from './MealSlot'
 import { FoodIcon } from './FoodIcon'
 import { DAYS, ALL_MEAL_TYPES } from '../types'
+import { useI18n } from '../lib/i18n'
 import type { MenuSlot as MenuSlotType, Recipe, MealType } from '../types'
 
 interface WeekGridProps {
@@ -9,6 +10,7 @@ interface WeekGridProps {
   recipes: Recipe[]
   activeMealTypes: MealType[]
   compact?: boolean
+  weekStart?: Date
   onSetSlot: (day: number, mealType: MealType, recipeId: string | null, customMeal: string | null) => Promise<void>
   onClearSlot: (day: number, mealType: MealType) => Promise<void>
   onAddExtra?: (day: number, mealType: MealType, recipeId: string) => Promise<void>
@@ -16,14 +18,25 @@ interface WeekGridProps {
   onMaterializeDefault?: (defaultRecipeId: string) => Promise<string | null>
 }
 
-export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, onClearSlot, onAddExtra, onRemoveExtra, onMaterializeDefault }: WeekGridProps) {
+export function WeekGrid({ slots, recipes, activeMealTypes, compact, weekStart, onSetSlot, onClearSlot, onAddExtra, onRemoveExtra, onMaterializeDefault }: WeekGridProps) {
+  const { t } = useI18n()
   const [editingSlot, setEditingSlot] = useState<{ day: number; meal: MealType; addingExtra?: boolean } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
   const [customMeal, setCustomMeal] = useState('')
   const [saving, setSaving] = useState(false)
 
-  const FILTER_CATEGORIES = ['Carnes', 'Pescados', 'Legumbres', 'Pasta y Arroces', 'Ensaladas', 'Huevos', 'Sopas y Cremas', 'Rapidas']
+  const FILTER_CATEGORIES = ['Carnes', 'Pescados', 'Legumbres', 'Pasta y Arroces', 'Ensaladas', 'Huevos', 'Sopas y Cremas', 'Rapidas'] as const
+  const FILTER_CATEGORY_KEYS: Record<string, string> = {
+    'Carnes': 'recipeCat.carnes',
+    'Pescados': 'recipeCat.pescados',
+    'Legumbres': 'recipeCat.legumbres',
+    'Pasta y Arroces': 'recipeCat.pasta',
+    'Ensaladas': 'recipeCat.ensaladas',
+    'Huevos': 'recipeCat.huevos',
+    'Sopas y Cremas': 'recipeCat.sopas',
+    'Rapidas': 'recipeCat.rapidas',
+  }
 
   const getSlot = (day: number, meal: MealType) =>
     slots.find(s => s.day_of_week === day && s.meal_type === meal)
@@ -79,12 +92,17 @@ export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, 
         const daySlots = activeMealTypes.map(mt => getSlot(dayIndex, mt))
         const hasMeals = daySlots.some(s => s != null)
 
+        // Calculate day number from weekStart
+        const dayDate = weekStart ? new Date(weekStart.getTime() + dayIndex * 86400000) : null
+        const dayNum = dayDate ? dayDate.getDate() : null
+
         return (
-          <div key={dayIndex} className={`${compact ? 'rounded-lg' : 'rounded-2xl'} border overflow-hidden ${hasMeals ? 'bg-accent-soft border-accent/20' : 'bg-surface border-line'}`}>
-            <div className={`${compact ? 'px-2 py-1' : 'px-3 py-2'} border-b ${hasMeals ? 'border-accent/10' : 'border-line-2'}`}>
+          <div key={dayIndex} className={`${compact ? 'rounded-lg' : 'rounded-2xl'} border overflow-hidden bg-surface border-line`}>
+            <div className={`${compact ? 'px-2 py-1' : 'px-3 py-2'} border-b flex items-center justify-between ${hasMeals ? 'bg-accent-soft border-accent/10' : 'border-line-2'}`}>
               <span className={`font-bold ${compact ? 'text-xs' : 'text-sm'} text-ink`}>{dayName}</span>
+              {dayNum != null && <span className={`${compact ? 'text-xs' : 'text-sm'} font-bold text-muted`}>{dayNum}</span>}
             </div>
-            <div className={`grid divide-x ${hasMeals ? 'divide-accent/10' : 'divide-line-2'}`} style={{ gridTemplateColumns: `repeat(${activeMealTypes.length}, 1fr)` }}>
+            <div className="grid divide-x divide-line-2" style={{ gridTemplateColumns: `repeat(${activeMealTypes.length}, 1fr)` }}>
               {activeMealTypes.map(mealType => {
                 const slot = getSlot(dayIndex, mealType)
                 const isEditing = editingSlot?.day === dayIndex && editingSlot?.meal === mealType
@@ -128,11 +146,11 @@ export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, 
             <div className="p-4 border-b border-line-2">
               <h3 className="font-bold text-ink">
                 {DAYS[editingSlot.day]} - {ALL_MEAL_TYPES[editingSlot.meal]}
-                {editingSlot.addingExtra && <span className="text-accent ml-2 text-sm font-normal">+ otro plato</span>}
+                {editingSlot.addingExtra && <span className="text-accent ml-2 text-sm font-normal">+ {t('menu.extraDish')}</span>}
               </h3>
               <input
                 type="text"
-                placeholder="Buscar receta..."
+                placeholder={t('menu.searchRecipe')}
                 value={searchQuery}
                 onChange={e => setSearchQuery(e.target.value)}
                 className="mt-2 w-full px-3 py-2 border border-line rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent"
@@ -145,7 +163,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, 
                     !categoryFilter ? 'bg-accent text-white border-accent' : 'bg-surface border-line text-muted'
                   }`}
                 >
-                  Todas
+                  {t('recipeCat.all')}
                 </button>
                 {FILTER_CATEGORIES.map(cat => (
                   <button
@@ -155,7 +173,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, compact, onSetSlot, 
                       categoryFilter === cat ? 'bg-accent text-white border-accent' : 'bg-surface border-line text-muted'
                     }`}
                   >
-                    {cat}
+                    {t(FILTER_CATEGORY_KEYS[cat] ?? cat)}
                   </button>
                 ))}
               </div>
