@@ -1,23 +1,44 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
-import { getDefaultRecipes } from '../lib/defaultRecipes'
 import type { Recipe } from '../types'
 
 export function useRecipes(householdId: string | undefined) {
   const [userRecipes, setUserRecipes] = useState<Recipe[]>([])
+  const [defaultRecipes, setDefaultRecipes] = useState<Recipe[]>([])
   const [loading, setLoading] = useState(true)
 
   const fetchRecipes = useCallback(async () => {
     if (!householdId) return
     setLoading(true)
 
-    const { data } = await supabase
-      .from('recipes')
-      .select('*, ingredients:recipe_ingredients(*)')
-      .eq('household_id', householdId)
-      .order('name')
+    // Fetch user recipes and default recipes in parallel
+    const [userResult, defaultResult] = await Promise.all([
+      supabase
+        .from('recipes')
+        .select('*, ingredients:recipe_ingredients(*)')
+        .eq('household_id', householdId)
+        .order('name'),
+      supabase
+        .from('default_recipes')
+        .select('*, ingredients:default_recipe_ingredients(*)')
+        .order('name'),
+    ])
 
-    setUserRecipes(data ?? [])
+    setUserRecipes(userResult.data ?? [])
+
+    // Map default recipes to match Recipe type
+    setDefaultRecipes(
+      (defaultResult.data ?? []).map(r => ({
+        id: r.id,
+        household_id: '__default__',
+        name: r.name,
+        icon: r.icon,
+        is_default: true,
+        created_at: r.created_at,
+        ingredients: r.ingredients,
+      }))
+    )
+
     setLoading(false)
   }, [householdId])
 
@@ -25,8 +46,7 @@ export function useRecipes(householdId: string | undefined) {
     fetchRecipes()
   }, [fetchRecipes])
 
-  // Merge user recipes with default recipes
-  const recipes = [...userRecipes, ...getDefaultRecipes()]
+  const recipes = [...userRecipes, ...defaultRecipes]
 
   const addRecipe = async (name: string, ingredients: string[], icon?: string) => {
     if (!householdId) return
@@ -80,7 +100,7 @@ export function useRecipes(householdId: string | undefined) {
   const materializeDefaultRecipe = async (defaultRecipeId: string): Promise<string | null> => {
     if (!householdId) return null
 
-    const defaultRecipe = getDefaultRecipes().find(r => r.id === defaultRecipeId)
+    const defaultRecipe = defaultRecipes.find(r => r.id === defaultRecipeId)
     if (!defaultRecipe) return null
 
     // Check if already materialized (same name in user recipes)
