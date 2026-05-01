@@ -63,25 +63,36 @@ export function MenuPage({ householdId }: MenuPageProps) {
         <button onClick={goToPrevWeek} className="p-2 text-muted-2 hover:text-ink-2 transition-colors pressable">
           <ChevronLeft className="w-5 h-5" />
         </button>
-        <div className="text-center relative">
-          <button
-            onClick={() => datePickerRef.current?.showPicker()}
-            className="text-sm font-bold text-ink hover:text-accent-strong transition-colors"
-          >
-            {formatWeekRange(currentWeek)}
-          </button>
-          <input
-            ref={datePickerRef}
-            type="date"
-            className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
-            value={formatDate(currentWeek)}
-            onChange={e => {
-              if (e.target.value) {
-                const picked = new Date(e.target.value + 'T00:00:00')
-                setCurrentWeek(getMonday(picked))
-              }
-            }}
-          />
+        <div className="flex items-center gap-2">
+          <div className="text-center relative">
+            <button
+              onClick={() => datePickerRef.current?.showPicker()}
+              className="text-sm font-bold text-ink hover:text-accent-strong transition-colors"
+            >
+              {formatWeekRange(currentWeek)}
+            </button>
+            <input
+              ref={datePickerRef}
+              type="date"
+              className="absolute inset-0 opacity-0 w-full h-full cursor-pointer"
+              value=""
+              onChange={e => {
+                if (e.target.value) {
+                  const picked = new Date(e.target.value + 'T00:00:00')
+                  setCurrentWeek(getMonday(picked))
+                  e.target.value = ''
+                }
+              }}
+            />
+          </div>
+          {getMonday().toDateString() !== currentWeek.toDateString() && (
+            <button
+              onClick={() => setCurrentWeek(getMonday())}
+              className="text-[10px] font-semibold text-accent-strong bg-accent-soft px-2 py-0.5 rounded-full pressable hover:bg-accent/20 transition-colors"
+            >
+              {t('general.today') ?? 'Hoy'}
+            </button>
+          )}
         </div>
         <button onClick={goToNextWeek} className="p-2 text-muted-2 hover:text-ink-2 transition-colors pressable">
           <ChevronRight className="w-5 h-5" />

@@ -1,5 +1,6 @@
+import { useState } from 'react'
 import { NavLink, Outlet } from 'react-router-dom'
-import { CalendarDays, ChefHat, ShoppingCart, LogOut, Users } from 'lucide-react'
+import { CalendarDays, ChefHat, ShoppingCart, LogOut, Users, Moon, Sun } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useI18n } from '../lib/i18n'
 
@@ -8,6 +9,19 @@ const logoUrl = import.meta.env.BASE_URL + 'icons/logo.png'
 export function Layout() {
   const { user, signOut } = useAuth()
   const { t } = useI18n()
+  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('planeat-theme') === 'dark')
+
+  const toggleDarkMode = () => {
+    const next = !darkMode
+    setDarkMode(next)
+    if (next) {
+      document.documentElement.setAttribute('data-theme', 'dark')
+      localStorage.setItem('planeat-theme', 'dark')
+    } else {
+      document.documentElement.removeAttribute('data-theme')
+      localStorage.setItem('planeat-theme', 'light')
+    }
+  }
 
   const navItems = [
     { to: '/', icon: CalendarDays, labelKey: 'nav.menu' },
@@ -28,6 +42,13 @@ export function Layout() {
           <span className="text-sm text-muted hidden sm:inline">
             {user?.email}
           </span>
+          <button
+            onClick={toggleDarkMode}
+            className="text-muted-2 hover:text-ink-2 transition-colors"
+            title={darkMode ? 'Light mode' : 'Dark mode'}
+          >
+            {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+          </button>
           <button
             onClick={signOut}
             className="text-muted-2 hover:text-ink-2 transition-colors"

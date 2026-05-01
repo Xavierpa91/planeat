@@ -113,19 +113,30 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
   }
 
   // ─── Layout: Stacked (default, original layout) ───
-  const renderStacked = () => (
+  const renderStacked = () => {
+    const todayStr = new Date().toDateString()
+
+    return (
     <div className="space-y-2">
       {DAYS.map((dayName, dayIndex) => {
         const daySlots = activeMealTypes.map(mt => getSlot(dayIndex, mt))
         const hasMeals = daySlots.some(s => s != null)
         const dayDate = weekStart ? new Date(weekStart.getTime() + dayIndex * 86400000) : null
         const dayNum = dayDate ? dayDate.getDate() : null
+        const isToday = dayDate ? dayDate.toDateString() === todayStr : false
 
         return (
-          <div key={dayIndex} className="rounded-2xl border overflow-hidden bg-surface border-line shadow-[var(--shadow-card)]">
-            <div className={`px-3 py-2 border-b flex items-center justify-between ${hasMeals ? 'bg-accent-soft border-accent/10' : 'border-line-2'}`}>
-              <span className="font-bold text-sm text-ink">{dayName}</span>
-              {dayNum != null && <span className="text-sm font-bold text-muted">{dayNum}</span>}
+          <div key={dayIndex} className={`rounded-2xl border overflow-hidden bg-surface shadow-[var(--shadow-card)] ${
+            isToday ? 'border-accent ring-1 ring-accent/20' : 'border-line'
+          }`}>
+            <div className={`px-3 py-2 border-b flex items-center justify-between ${
+              isToday ? 'bg-accent-soft border-accent/10' : hasMeals ? 'bg-accent-soft/50 border-accent/10' : 'border-line-2'
+            }`}>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-sm text-ink">{dayName}</span>
+                {dayNum != null && <span className="text-sm font-bold text-muted">{dayNum}</span>}
+                {isToday && <span className="text-[10px] font-semibold text-accent-strong bg-accent-soft px-1.5 py-0.5 rounded-full">Hoy</span>}
+              </div>
             </div>
             <div className="grid divide-x divide-line-2" style={{ gridTemplateColumns: `repeat(${activeMealTypes.length}, 1fr)` }}>
               {activeMealTypes.map(mealType => {
@@ -150,7 +161,8 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
         )
       })}
     </div>
-  )
+    )
+  }
 
   // ─── Layout: Day Focus ───
   const renderDayFocus = () => {

@@ -148,5 +148,10 @@ export const es: Record<string, string> = {
 
   // General
   'general.thisWeek': 'Esta semana',
+  'general.today': 'Hoy',
   'general.delete': 'Eliminar',
+  'shopping.addItem': 'Anadir producto',
+  'shopping.addItemPlaceholder': 'Ej: Pan de molde',
+  'shopping.chart': 'Distribucion',
+  'shopping.chartTitle': 'Distribucion por categoria',
 }

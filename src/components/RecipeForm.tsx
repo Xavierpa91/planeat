@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import { Plus, X, Save } from 'lucide-react'
 import { FoodIcon, FOOD_ICONS } from './FoodIcon'
 import type { Recipe } from '../types'
@@ -16,6 +16,15 @@ export function RecipeForm({ recipe, onSave, onCancel }: RecipeFormProps) {
   )
   const [icon, setIcon] = useState<string>(recipe?.icon ?? '')
   const [saving, setSaving] = useState(false)
+  const ingredientRefs = useRef<(HTMLInputElement | null)[]>([])
+
+  // Focus last ingredient input when a new one is added
+  useEffect(() => {
+    const last = ingredientRefs.current[ingredients.length - 1]
+    if (last && ingredients[ingredients.length - 1] === '') {
+      last.focus()
+    }
+  }, [ingredients.length])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -77,6 +86,7 @@ export function RecipeForm({ recipe, onSave, onCancel }: RecipeFormProps) {
           {ingredients.map((ing, i) => (
             <div key={i} className="flex gap-2">
               <input
+                ref={el => { ingredientRefs.current[i] = el }}
                 type="text"
                 value={ing}
                 onChange={e => updateIngredient(i, e.target.value)}

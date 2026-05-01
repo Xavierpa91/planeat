@@ -18,6 +18,18 @@ const CATEGORY_MAP: Record<string, string> = {
   costillas: 'Carnes',
   morcilla: 'Carnes',
   lacon: 'Carnes',
+  'jamon york': 'Carnes',
+  'jamon cocido': 'Carnes',
+  salchichon: 'Carnes',
+  fuet: 'Carnes',
+  mortadela: 'Carnes',
+  sobrasada: 'Carnes',
+  cecina: 'Carnes',
+  bresaola: 'Carnes',
+  pepperoni: 'Carnes',
+  fiambre: 'Carnes',
+  'pechuga de pavo': 'Carnes',
+  embutido: 'Carnes',
 
   // Pescados
   salmon: 'Pescados',

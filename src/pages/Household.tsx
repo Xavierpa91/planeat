@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
-import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink, Globe, Moon } from 'lucide-react'
+import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink, Globe, Moon, Save } from 'lucide-react'
 import { useHousehold } from '../hooks/useHousehold'
+import { supabase } from '../lib/supabase'
 import { useI18n } from '../lib/i18n'
 import {
   getNotificationPrefs,
@@ -28,6 +29,54 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
 
   // Dark mode
   const [darkMode, setDarkMode] = useState(() => localStorage.getItem('planeat-theme') === 'dark')
+
+  // WhatsApp config
+  const [waPhone, setWaPhone] = useState('')
+  const [waApiKey, setWaApiKey] = useState('')
+  const [waDailyEnabled, setWaDailyEnabled] = useState(false)
+  const [waDailyHour, setWaDailyHour] = useState(9)
+  const [waWeeklyEnabled, setWaWeeklyEnabled] = useState(false)
+  const [waWeeklyDay, setWaWeeklyDay] = useState(1)
+  const [waWeeklyHour, setWaWeeklyHour] = useState(8)
+  const [waSaving, setWaSaving] = useState(false)
+  const [waSaved, setWaSaved] = useState(false)
+
+  // Load WhatsApp config from Supabase
+  useEffect(() => {
+    if (!userId) return
+    supabase
+      .from('whatsapp_config')
+      .select('*')
+      .eq('user_id', userId)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          setWaPhone(data.phone ?? '')
+          setWaApiKey(data.api_key ?? '')
+          setWaDailyEnabled(data.daily_enabled ?? false)
+          setWaDailyHour(data.daily_hour ?? 9)
+          setWaWeeklyEnabled(data.weekly_enabled ?? false)
+          setWaWeeklyDay(data.weekly_day ?? 1)
+          setWaWeeklyHour(data.weekly_hour ?? 8)
+        }
+      })
+  }, [userId])
+
+  const saveWhatsAppConfig = async () => {
+    setWaSaving(true)
+    await supabase.rpc('upsert_whatsapp_config', {
+      p_phone: waPhone,
+      p_api_key: waApiKey,
+      p_daily_enabled: waDailyEnabled,
+      p_daily_hour: waDailyHour,
+      p_weekly_enabled: waWeeklyEnabled,
+      p_weekly_day: waWeeklyDay,
+      p_weekly_hour: waWeeklyHour,
+    })
+    setWaSaving(false)
+    setWaSaved(true)
+    setTimeout(() => setWaSaved(false), 2000)
+  }
 
   const toggleDarkMode = () => {
     const next = !darkMode
@@ -242,14 +291,124 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
         <p className="text-sm text-muted">
           {t('household.whatsappDesc')}
         </p>
+
+        {/* Setup instructions */}
         <div className="space-y-2">
           <p className="text-xs font-semibold text-ink">{t('household.whatsappSetup')}</p>
           <ol className="text-xs text-muted space-y-1.5 list-decimal list-inside">
             <li>{t('household.whatsappStep1')} <span className="font-mono text-ink bg-bg px-1 rounded">{t('household.whatsappStep1Msg')}</span> {t('household.whatsappStep1To')}</li>
             <li>{t('household.whatsappStep2')}</li>
-            <li>{t('household.whatsappStep3')}</li>
           </ol>
         </div>
+
+        {/* Phone & API key */}
+        <div className="space-y-3">
+          <div>
+            <label className="text-xs font-semibold text-ink block mb-1">{locale === 'es' ? 'Telefono (con prefijo)' : 'Phone (with prefix)'}</label>
+            <input
+              type="tel"
+              value={waPhone}
+              onChange={e => setWaPhone(e.target.value)}
+              placeholder="+34612345678"
+              className="w-full px-3 py-2 border border-line rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent bg-surface-2 focus:bg-surface"
+            />
+          </div>
+          <div>
+            <label className="text-xs font-semibold text-ink block mb-1">API Key</label>
+            <input
+              type="text"
+              value={waApiKey}
+              onChange={e => setWaApiKey(e.target.value)}
+              placeholder="123456"
+              className="w-full px-3 py-2 border border-line rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent bg-surface-2 focus:bg-surface"
+            />
+          </div>
+        </div>
+
+        {/* Daily reminder toggle */}
+        <div className="space-y-3 pt-1">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm text-ink">{locale === 'es' ? 'Recordatorio diario' : 'Daily reminder'}</span>
+              <p className="text-xs text-muted">{locale === 'es' ? 'Menu del dia + ingredientes' : "Today's menu + ingredients"}</p>
+            </div>
+            <button
+              onClick={() => setWaDailyEnabled(!waDailyEnabled)}
+              className={`w-12 h-7 rounded-full transition-colors relative ${waDailyEnabled ? 'bg-green-500' : 'bg-muted-2'}`}
+            >
+              <div className={`w-5 h-5 bg-white rounded-full absolute top-1 transition-transform ${waDailyEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+            </button>
+          </div>
+          {waDailyEnabled && (
+            <div className="flex items-center gap-3">
+              <label className="text-sm text-muted w-12 shrink-0">{t('household.notifHour')}</label>
+              <select
+                value={waDailyHour}
+                onChange={e => setWaDailyHour(Number(e.target.value))}
+                className="flex-1 px-3 py-2 border border-line rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent bg-surface"
+              >
+                {Array.from({ length: 24 }, (_, i) => (
+                  <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>
+                ))}
+              </select>
+            </div>
+          )}
+        </div>
+
+        {/* Weekly reminder toggle */}
+        <div className="space-y-3">
+          <div className="flex items-center justify-between">
+            <div>
+              <span className="text-sm text-ink">{locale === 'es' ? 'Recordatorio semanal' : 'Weekly reminder'}</span>
+              <p className="text-xs text-muted">{locale === 'es' ? 'Lista de la compra completa' : 'Full shopping list'}</p>
+            </div>
+            <button
+              onClick={() => setWaWeeklyEnabled(!waWeeklyEnabled)}
+              className={`w-12 h-7 rounded-full transition-colors relative ${waWeeklyEnabled ? 'bg-green-500' : 'bg-muted-2'}`}
+            >
+              <div className={`w-5 h-5 bg-white rounded-full absolute top-1 transition-transform ${waWeeklyEnabled ? 'translate-x-6' : 'translate-x-1'}`} />
+            </button>
+          </div>
+          {waWeeklyEnabled && (
+            <div className="space-y-2">
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-muted w-12 shrink-0">{t('household.notifDay')}</label>
+                <select
+                  value={waWeeklyDay}
+                  onChange={e => setWaWeeklyDay(Number(e.target.value))}
+                  className="flex-1 px-3 py-2 border border-line rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent bg-surface"
+                >
+                  {DAY_KEYS.map((key, i) => (
+                    <option key={i} value={i}>{t(key)}</option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-muted w-12 shrink-0">{t('household.notifHour')}</label>
+                <select
+                  value={waWeeklyHour}
+                  onChange={e => setWaWeeklyHour(Number(e.target.value))}
+                  className="flex-1 px-3 py-2 border border-line rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent bg-surface"
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>
+                  ))}
+                </select>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Save button */}
+        <button
+          onClick={saveWhatsAppConfig}
+          disabled={!waPhone || !waApiKey || waSaving}
+          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-full text-sm font-semibold disabled:opacity-40 hover:bg-green-700 transition-colors pressable"
+        >
+          <Save className="w-4 h-4" />
+          {waSaved ? (locale === 'es' ? 'Guardado!' : 'Saved!') : waSaving ? (locale === 'es' ? 'Guardando...' : 'Saving...') : (locale === 'es' ? 'Guardar configuracion' : 'Save configuration')}
+        </button>
+
         <a
           href="https://www.callmebot.com/blog/free-api-whatsapp-messages/"
           target="_blank"
