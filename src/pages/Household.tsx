@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink, Globe, Moon, Save } from 'lucide-react'
+import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink, Globe, Save } from 'lucide-react'
 import { useHousehold } from '../hooks/useHousehold'
 import { supabase } from '../lib/supabase'
 import { useI18n } from '../lib/i18n'
@@ -26,9 +26,6 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
 
   // i18n
   const { t, locale, setLocale } = useI18n()
-
-  // Dark mode
-  const [darkMode, setDarkMode] = useState(() => localStorage.getItem('planeat-theme') === 'dark')
 
   // WhatsApp config
   const [waPhone, setWaPhone] = useState('')
@@ -76,18 +73,6 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
     setWaSaving(false)
     setWaSaved(true)
     setTimeout(() => setWaSaved(false), 2000)
-  }
-
-  const toggleDarkMode = () => {
-    const next = !darkMode
-    setDarkMode(next)
-    if (next) {
-      document.documentElement.setAttribute('data-theme', 'dark')
-      localStorage.setItem('planeat-theme', 'dark')
-    } else {
-      document.documentElement.removeAttribute('data-theme')
-      localStorage.setItem('planeat-theme', 'light')
-    }
   }
 
   // Notification prefs
@@ -446,28 +431,6 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
         </div>
       </div>
 
-      {/* Appearance / Dark mode */}
-      <div className="bg-surface rounded-2xl border border-line p-4 space-y-4 shadow-[var(--shadow-card)]">
-        <h3 className="font-semibold text-ink flex items-center gap-2">
-          <Moon className="w-4 h-4 text-accent" />
-          {t('household.appearance')}
-        </h3>
-        <div className="flex items-center justify-between">
-          <span className="text-sm text-ink">{t('household.darkMode')}</span>
-          <button
-            onClick={toggleDarkMode}
-            className={`w-12 h-7 rounded-full transition-colors relative ${
-              darkMode ? 'bg-accent' : 'bg-muted-2'
-            }`}
-          >
-            <div
-              className={`w-5 h-5 bg-white rounded-full absolute top-1 transition-transform ${
-                darkMode ? 'translate-x-6' : 'translate-x-1'
-              }`}
-            />
-          </button>
-        </div>
-      </div>
     </div>
   )
 }

@@ -28,7 +28,7 @@ function AuthenticatedApp() {
   return (
     <Routes>
       <Route element={<Layout />}>
-        <Route path="/" element={<MenuPage householdId={household.id} />} />
+        <Route path="/" element={<MenuPage householdId={household.id} householdName={household.name} />} />
         <Route path="/recipes" element={<RecipesPage householdId={household.id} />} />
         <Route path="/shopping" element={<ShoppingPage householdId={household.id} />} />
         <Route path="/household" element={<HouseholdPage userId={user!.id} onHouseholdCreated={refetch} />} />

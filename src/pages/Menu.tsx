@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { ChevronLeft, ChevronRight, Copy, Calendar, LayoutList, CalendarDays, Grid3X3 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Copy, Calendar, LayoutList, CalendarDays, Grid3X3, Home } from 'lucide-react'
 import { WeekGrid } from '../components/WeekGrid'
 import { useMenu } from '../hooks/useMenu'
 import { useRecipes } from '../hooks/useRecipes'
@@ -10,9 +10,10 @@ import type { MealType } from '../types'
 
 interface MenuPageProps {
   householdId: string
+  householdName?: string
 }
 
-export function MenuPage({ householdId }: MenuPageProps) {
+export function MenuPage({ householdId, householdName }: MenuPageProps) {
   const [currentWeek, setCurrentWeek] = useState(() => getMonday())
   const { slots, loading, setSlot, clearSlot, addExtraRecipe, removeExtraRecipe, copyMenuToWeek } = useMenu(householdId, currentWeek)
   const { recipes, materializeDefaultRecipe } = useRecipes(householdId)
@@ -57,6 +58,14 @@ export function MenuPage({ householdId }: MenuPageProps) {
 
   return (
     <div className="space-y-4 p-4">
+      {/* Household name */}
+      {householdName && (
+        <div className="flex items-center gap-1.5 text-xs text-muted">
+          <Home className="w-3.5 h-3.5" />
+          <span className="font-semibold">{householdName}</span>
+        </div>
+      )}
+
       {/* Week navigation */}
       <div className="flex items-center justify-between">
         <button onClick={goToPrevWeek} className="p-2 text-muted-2 hover:text-ink-2 transition-colors pressable">
