@@ -141,7 +141,7 @@ export function MenuPage({ householdId, householdName }: MenuPageProps) {
       const sourceWeekDate = sourceWeeks[cycleIndex % 4]
       // Temporarily load source week slots
       const sourceStr = formatDate(sourceWeekDate)
-      const supabase = supabase
+  
       const { data: sourceMenu } = await supabase
         .from('weekly_menus').select('id').eq('household_id', householdId).eq('week_start', sourceStr).single()
 
@@ -185,7 +185,7 @@ export function MenuPage({ householdId, householdName }: MenuPageProps) {
     setProcessing(true)
     const endDate = new Date(targetEndDate + 'T00:00:00')
     let week = shiftWeekBy(currentWeek, alternateEvery)
-    const supabase = supabase
+
 
     while (week <= endDate) {
       const targetStr = formatDate(week)
@@ -229,7 +229,7 @@ export function MenuPage({ householdId, householdName }: MenuPageProps) {
     setProcessing(true)
     const endDate = new Date(targetEndDate + 'T00:00:00')
     let week = new Date(currentWeek)
-    const supabase = supabase
+
 
     while (week <= endDate) {
       const weekStr = formatDate(week)
