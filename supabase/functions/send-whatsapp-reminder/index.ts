@@ -118,9 +118,11 @@ async function getUserHousehold(userId: string): Promise<string | null> {
 
 Deno.serve(async (_req) => {
   try {
+    // Convert UTC to Europe/Madrid time
     const now = new Date()
-    const currentHour = now.getUTCHours() // Note: adjust for timezone if needed
-    const currentDay = now.getUTCDay()
+    const madridTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }))
+    const currentHour = madridTime.getHours()
+    const currentDay = madridTime.getDay()
 
     // Fetch all whatsapp configs
     const { data: configs, error } = await supabase
@@ -141,7 +143,7 @@ Deno.serve(async (_req) => {
       const householdId = await getUserHousehold(config.user_id)
       if (!householdId) continue
 
-      const today = new Date()
+      const today = madridTime
       const weekStart = formatDate(getMonday(today))
       const dayOfWeek = (today.getDay() + 6) % 7 // Convert to Mon=0
 
