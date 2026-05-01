@@ -255,6 +255,8 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
           <UserPlus className="w-4 h-4 text-accent" />
           {t('household.inviteMember')}
         </h3>
+
+        {/* Email invite */}
         <form onSubmit={handleInvite} className="flex gap-2">
           <input
             type="email"
@@ -274,26 +276,34 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
         {inviteSent && (
           <p className="text-xs text-accent-strong">{t('household.inviteSent')}</p>
         )}
+
         <p className="text-xs text-muted">
           {locale === 'es'
-            ? 'La invitacion se activa cuando el invitado inicie sesion con ese email en PlanEat.'
-            : 'The invite activates when the guest signs in with that email on PlanEat.'}
+            ? 'Introduce el email de Google del invitado. Cuando inicie sesion en PlanEat, se unira a tu hogar automaticamente.'
+            : 'Enter the guest\'s Google email. When they sign in to PlanEat, they\'ll automatically join your household.'}
         </p>
-        {inviteEmail.trim() && inviteSent && (
+
+        {/* WhatsApp invite — always visible */}
+        <div className="border-t border-line-2 pt-3">
+          <p className="text-xs text-muted mb-2">
+            {locale === 'es'
+              ? 'O envia el enlace de tu hogar por WhatsApp:'
+              : 'Or send your household link via WhatsApp:'}
+          </p>
           <a
             href={`https://wa.me/?text=${encodeURIComponent(
               locale === 'es'
-                ? `Te invito a unirte a mi hogar "${household.name}" en PlanEat! Entra con tu cuenta de Google (${inviteEmail}) aqui: https://xavierpa91.github.io/planeat/`
-                : `I'm inviting you to join my household "${household.name}" on PlanEat! Sign in with your Google account (${inviteEmail}) here: https://xavierpa91.github.io/planeat/`
+                ? `Te invito a unirte a mi hogar "${household.name}" en PlanEat! Planifica menus semanales y listas de la compra juntos. Entra con tu cuenta de Google aqui: https://xavierpa91.github.io/planeat/`
+                : `I'm inviting you to join my household "${household.name}" on PlanEat! Plan weekly menus and shopping lists together. Sign in with your Google account here: https://xavierpa91.github.io/planeat/`
             )}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-full text-sm font-semibold hover:bg-green-700 transition-colors pressable"
+            className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-full text-sm font-semibold hover:bg-green-700 transition-colors pressable"
           >
             <MessageCircle className="w-4 h-4" />
-            {locale === 'es' ? 'Enviar invitacion por WhatsApp' : 'Send invite via WhatsApp'}
+            {locale === 'es' ? 'Invitar por WhatsApp' : 'Invite via WhatsApp'}
           </a>
-        )}
+        </div>
       </div>
 
       {/* Notifications */}
