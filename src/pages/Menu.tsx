@@ -388,9 +388,9 @@ export function MenuPage({ householdId, householdName }: MenuPageProps) {
 
       {/* Actions modal */}
       {showActions && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center animate-fade" onClick={closeModal}>
+        <div className="fixed inset-0 bg-black/40 z-[60] flex items-center justify-center p-4 animate-fade" onClick={closeModal}>
           <div
-            className="bg-surface w-full sm:max-w-sm sm:rounded-2xl rounded-t-2xl p-5 pb-24 space-y-3 animate-slide-up max-h-[85vh] overflow-y-auto"
+            className="bg-surface w-full max-w-sm rounded-2xl p-5 space-y-3 animate-pop max-h-[80vh] overflow-y-auto"
             onClick={e => e.stopPropagation()}
           >
             <div className="flex items-center justify-between mb-1">
