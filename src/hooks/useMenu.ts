@@ -229,9 +229,16 @@ export function useMenu(householdId: string | undefined, weekStart: Date) {
       .sort()
   }
 
+  const clearWeek = async () => {
+    if (!menu) return
+    await supabase.from('menu_slot_recipes').delete().in('slot_id', slots.map(s => s.id))
+    await supabase.from('menu_slots').delete().eq('menu_id', menu.id)
+    await fetchMenu()
+  }
+
   return {
     menu, slots, loading,
     setSlot, clearSlot, addExtraRecipe, removeExtraRecipe,
-    copyMenuToWeek, getWeekIngredients, refetch: fetchMenu,
+    copyMenuToWeek, clearWeek, getWeekIngredients, refetch: fetchMenu,
   }
 }
