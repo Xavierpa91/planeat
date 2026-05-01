@@ -8,7 +8,9 @@ export const en: Record<string, string> = {
 
   // Login
   'login.title': 'PlanEat',
-  'login.subtitle': 'Plan your weekly meals',
+  'login.heading': 'Plan once, enjoy',
+  'login.headingAccent': 'the whole week',
+  'login.subtitle': 'Plan your weekly menu with thousands of recipes and create your shopping list instantly, all in one.',
   'login.plan': 'Plan',
   'login.shop': 'Shop',
   'login.share': 'Share',
@@ -19,6 +21,9 @@ export const en: Record<string, string> = {
   'menu.meals': 'meals',
   'menu.compactView': 'Compact View',
   'menu.normalView': 'Normal View',
+  'menu.layoutStacked': 'Stacked',
+  'menu.layoutDay': 'Day',
+  'menu.layoutCalendar': 'Calendar',
   'menu.copyToWeek': 'Copy menu to another week',
   'menu.copyTo': 'Copy menu to...',
   'menu.selectDate': 'Select a date from the target week. The Monday of that week will be used.',
@@ -115,6 +120,8 @@ export const en: Record<string, string> = {
   'household.whatsappStep3': 'Set it up in the GitHub repository secrets',
   'household.whatsappMore': 'More info about CallMeBot',
   'household.language': 'Language',
+  'household.appearance': 'Appearance',
+  'household.darkMode': 'Dark mode',
 
   // Allergens
   'allergen.gluten': 'Gluten',

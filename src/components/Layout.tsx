@@ -19,7 +19,7 @@ export function Layout() {
   return (
     <div className="min-h-svh bg-bg flex flex-col">
       {/* Header */}
-      <header className="bg-surface border-b border-line px-4 py-3 flex items-center justify-between">
+      <header className="bg-surface border-b border-line px-4 py-3 flex items-center justify-between shadow-[var(--shadow-card)]">
         <h1 className="text-xl font-extrabold tracking-[-0.02em] flex items-center gap-2">
           <img src={logoUrl} alt="PlanEat" className="w-8 h-8 rounded-lg" />
           <span><span className="text-accent-strong">Plan</span><span className="text-ink">Eat</span></span>
@@ -44,7 +44,7 @@ export function Layout() {
       </main>
 
       {/* Bottom nav */}
-      <nav className="fixed bottom-0 left-0 right-0 bg-surface border-t border-line flex justify-around py-2 z-50">
+      <nav className="fixed bottom-0 left-0 right-0 bg-surface/80 backdrop-blur-xl border-t border-line flex justify-around py-2 z-50">
         {navItems.map(({ to, icon: Icon, labelKey }) => (
           <NavLink
             key={to}

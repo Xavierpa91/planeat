@@ -53,7 +53,7 @@ export function RecipesPage({ householdId }: RecipesPageProps) {
   return (
     <div className="space-y-4">
       <div className="flex items-center justify-between">
-        <h2 className="text-lg font-extrabold text-ink tracking-[-0.02em]">{t('recipes.title')}</h2>
+        <h2 className="text-lg font-extrabold text-ink tracking-[-0.02em] font-[family-name:var(--font-display)]">{t('recipes.title')}</h2>
         {!showForm && !editingRecipe && activeTab === 'mine' && (
           <button
             onClick={() => setShowForm(true)}
@@ -118,7 +118,7 @@ export function RecipesPage({ householdId }: RecipesPageProps) {
       ) : (
         <div className="space-y-2">
           {displayedRecipes.map(recipe => (
-            <div key={recipe.id} className="bg-surface rounded-2xl border border-line p-4 pressable">
+            <div key={recipe.id} className="bg-surface rounded-2xl border border-line p-4 pressable shadow-[var(--shadow-card)]">
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
                   {recipe.icon && (

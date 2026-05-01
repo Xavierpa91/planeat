@@ -1,23 +1,49 @@
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
 @import "tailwindcss";
 
 @theme {
-  --color-accent: oklch(0.70 0.14 45);
-  --color-accent-strong: oklch(0.58 0.16 45);
-  --color-accent-soft: oklch(0.93 0.05 45);
-  --color-accent-ink: oklch(0.35 0.12 45);
+  --color-bg: #f6f1ea;
   --color-surface: #ffffff;
-  --color-surface-2: #fff5ee;
-  --color-ink: #1a1410;
-  --color-ink-2: #2e2820;
-  --color-muted: #6b655c;
-  --color-muted-2: #9a9588;
-  --color-line: #e8e3d6;
-  --color-line-2: #f0ecdf;
-  --color-danger: oklch(0.62 0.18 25);
-  --color-bg: #ffe6d3;
+  --color-surface-2: #faf5ee;
+  --color-ink: #1c1814;
+  --color-ink-2: #3a322a;
+  --color-muted: #7a6f63;
+  --color-muted-2: #a89f92;
+  --color-line: #ece4d6;
+  --color-line-2: #f3ede1;
+  --color-accent: oklch(0.62 0.13 45);
+  --color-accent-strong: oklch(0.50 0.15 40);
+  --color-accent-soft: oklch(0.94 0.04 50);
+  --color-accent-ink: oklch(0.36 0.10 40);
+  --color-danger: oklch(0.58 0.18 25);
+  --color-success: oklch(0.58 0.13 150);
 
   --font-sans: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+  --font-display: 'Fraunces', 'Georgia', serif;
+
+  --shadow-card: 0 1px 0 rgba(28,24,20,0.02), 0 2px 8px rgba(28,24,20,0.04);
+  --shadow-elev: 0 1px 0 rgba(28,24,20,0.03), 0 8px 28px rgba(28,24,20,0.10);
+}
+
+/* Dark mode */
+[data-theme="dark"] {
+  --color-bg: #161310;
+  --color-surface: #201c18;
+  --color-surface-2: #1a1714;
+  --color-ink: #f5efe6;
+  --color-ink-2: #d8d0c2;
+  --color-muted: #8f8678;
+  --color-muted-2: #685f53;
+  --color-line: #2c2722;
+  --color-line-2: #25211c;
+  --color-accent: oklch(0.72 0.13 50);
+  --color-accent-strong: oklch(0.80 0.14 55);
+  --color-accent-soft: oklch(0.30 0.08 45);
+  --color-accent-ink: oklch(0.85 0.12 55);
+  --color-danger: oklch(0.58 0.18 25);
+  --color-success: oklch(0.58 0.13 150);
+  --shadow-card: 0 1px 0 rgba(0,0,0,0.1), 0 2px 8px rgba(0,0,0,0.2);
+  --shadow-elev: 0 1px 0 rgba(0,0,0,0.2), 0 8px 28px rgba(0,0,0,0.4);
 }
 
 * {
@@ -38,7 +64,7 @@ body {
 }
 
 .pressable {
-  transition: transform 120ms ease, background-color 120ms ease;
+  transition: transform 120ms ease, background-color 120ms ease, opacity 120ms ease;
 }
 .pressable:active {
   transform: scale(0.97);
@@ -55,5 +81,10 @@ body {
   from { opacity: 0; }
   to { opacity: 1; }
 }
+@keyframes pop {
+  0% { transform: scale(0.94); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
 .animate-slide-up { animation: slideUp 320ms cubic-bezier(.2,.8,.2,1); }
 .animate-fade { animation: fadeIn 220ms ease; }
+.animate-pop { animation: pop 200ms cubic-bezier(.2,.8,.2,1); }

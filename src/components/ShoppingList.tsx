@@ -85,7 +85,7 @@ export function ShoppingList({ ingredients }: ShoppingListProps) {
   return (
     <div className="space-y-3">
       {/* Progress - circular like v2 prototype */}
-      <div className="bg-surface rounded-2xl border border-line p-4 flex items-center gap-4">
+      <div className="bg-surface rounded-2xl border border-line p-4 flex items-center gap-4 shadow-[var(--shadow-card)]">
         <div
           className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
           style={{
@@ -134,7 +134,7 @@ export function ShoppingList({ ingredients }: ShoppingListProps) {
           const checkedCount = items.filter(i => checked.has(i)).length
 
           return (
-            <div key={category} className="bg-surface rounded-2xl border border-line overflow-hidden">
+            <div key={category} className="bg-surface rounded-2xl border border-line overflow-hidden shadow-[var(--shadow-card)]">
               {/* Category header */}
               <button
                 onClick={() => toggleCollapse(category)}

@@ -40,7 +40,7 @@ export function RecipeForm({ recipe, onSave, onCancel }: RecipeFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit} className="bg-surface rounded-2xl border border-line p-4 space-y-4">
+    <form onSubmit={handleSubmit} className="bg-surface rounded-2xl border border-line p-4 space-y-4 shadow-[var(--shadow-card)]">
       <div>
         <label className="block text-sm font-semibold text-ink mb-1">Nombre de la receta</label>
         <input

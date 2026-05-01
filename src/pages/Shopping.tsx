@@ -18,7 +18,7 @@ export function ShoppingPage({ householdId }: ShoppingPageProps) {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-extrabold text-ink tracking-[-0.02em]">{t('shopping.title')}</h2>
+      <h2 className="text-lg font-extrabold text-ink tracking-[-0.02em] font-[family-name:var(--font-display)]">{t('shopping.title')}</h2>
 
       {/* Week navigation */}
       <div className="flex items-center justify-between">
