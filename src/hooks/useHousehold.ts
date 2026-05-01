@@ -94,6 +94,14 @@ export function useHousehold(userId: string | undefined) {
     setHouseholds(prev => prev.map(h => h.id === household.id ? { ...h, name: newName } : h))
   }
 
+  const joinByCode = async (code: string) => {
+    const { data, error } = await supabase.rpc('join_household_by_code', { p_code: code })
+    if (error) throw error
+    // Refetch to get the updated household list
+    await fetchHouseholds()
+    return data as string
+  }
+
   const leaveHousehold = async (householdId: string) => {
     if (!userId) return
     await supabase
@@ -114,6 +122,7 @@ export function useHousehold(userId: string | undefined) {
     createHousehold,
     inviteMember,
     renameHousehold,
+    joinByCode,
     switchHousehold,
     leaveHousehold,
     refetch: fetchHouseholds,

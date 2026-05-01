@@ -24,7 +24,7 @@ interface HouseholdPageProps {
 import type { Household } from '../types'
 
 export function HouseholdPage({ userId, onHouseholdCreated, households: passedHouseholds, activeHouseholdId, onSwitchHousehold, onLeaveHousehold }: HouseholdPageProps) {
-  const { household, loading, createHousehold, inviteMember, renameHousehold } = useHousehold(userId)
+  const { household, loading, createHousehold, inviteMember, renameHousehold, joinByCode } = useHousehold(userId)
   const [householdName, setHouseholdName] = useState('')
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteSent, setInviteSent] = useState(false)
@@ -175,6 +175,24 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
     )
   }
 
+  const [joinCode, setJoinCode] = useState('')
+  const [joinError, setJoinError] = useState('')
+  const [joining, setJoining] = useState(false)
+
+  const handleJoinByCode = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!joinCode.trim()) return
+    setJoining(true)
+    setJoinError('')
+    try {
+      await joinByCode(joinCode.trim())
+      onHouseholdCreated()
+    } catch {
+      setJoinError(locale === 'es' ? 'Codigo no valido' : 'Invalid code')
+    }
+    setJoining(false)
+  }
+
   if (!household) {
     return (
       <div className="max-w-sm mx-auto space-y-6 pt-8">
@@ -187,6 +205,8 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
             {t('household.createDesc')}
           </p>
         </div>
+
+        {/* Create new household */}
         <form onSubmit={handleCreate} className="space-y-3">
           <input
             type="text"
@@ -202,6 +222,33 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
             className="w-full px-4 py-3 bg-accent text-white rounded-full text-sm font-semibold disabled:opacity-40 hover:bg-accent-strong transition-colors pressable"
           >
             {creating ? t('household.creating') : t('household.create')}
+          </button>
+        </form>
+
+        {/* Divider */}
+        <div className="flex items-center gap-3">
+          <div className="flex-1 h-px bg-line" />
+          <span className="text-xs text-muted-2 font-semibold">{locale === 'es' ? 'O UNETE A UNO' : 'OR JOIN ONE'}</span>
+          <div className="flex-1 h-px bg-line" />
+        </div>
+
+        {/* Join by code */}
+        <form onSubmit={handleJoinByCode} className="space-y-3">
+          <input
+            type="text"
+            value={joinCode}
+            onChange={e => setJoinCode(e.target.value.toUpperCase())}
+            placeholder={locale === 'es' ? 'Codigo de invitacion (ej: A1B2C3)' : 'Invite code (e.g. A1B2C3)'}
+            className="w-full px-4 py-3 border border-line rounded-xl text-sm text-center font-mono tracking-widest uppercase focus:outline-none focus:ring-2 focus:ring-accent"
+            maxLength={6}
+          />
+          {joinError && <p className="text-xs text-danger text-center">{joinError}</p>}
+          <button
+            type="submit"
+            disabled={!joinCode.trim() || joining}
+            className="w-full px-4 py-3 border-2 border-accent text-accent-strong rounded-full text-sm font-semibold disabled:opacity-40 hover:bg-accent-soft transition-colors pressable"
+          >
+            {joining ? '...' : (locale === 'es' ? 'Unirme con codigo' : 'Join with code')}
           </button>
         </form>
       </div>
@@ -250,6 +297,21 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
               className="text-muted-2 hover:text-accent transition-colors p-1"
             >
               <Pencil className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
+        {/* Invite code */}
+        {household.invite_code && (
+          <div className="flex items-center gap-2 mt-1">
+            <span className="text-xs text-muted">{locale === 'es' ? 'Codigo de invitacion:' : 'Invite code:'}</span>
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(household.invite_code!)
+              }}
+              className="font-mono text-sm font-bold text-accent-strong bg-accent-soft px-2.5 py-0.5 rounded-lg tracking-widest pressable hover:bg-accent/20 transition-colors"
+              title={locale === 'es' ? 'Copiar codigo' : 'Copy code'}
+            >
+              {household.invite_code}
             </button>
           </div>
         )}
@@ -361,8 +423,8 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
           <a
             href={`https://wa.me/?text=${encodeURIComponent(
               locale === 'es'
-                ? `Te invito a unirte a mi hogar "${household.name}" en PlanEat! Planifica menus semanales y listas de la compra juntos. Entra con tu cuenta de Google aqui: https://xavierpa91.github.io/planeat/`
-                : `I'm inviting you to join my household "${household.name}" on PlanEat! Plan weekly menus and shopping lists together. Sign in with your Google account here: https://xavierpa91.github.io/planeat/`
+                ? `Te invito a unirte a mi hogar "${household.name}" en PlanEat! Planifica menus semanales y listas de la compra juntos.\n\nEntra aqui: https://xavierpa91.github.io/planeat/\nCodigo de invitacion: ${household.invite_code ?? ''}`
+                : `I'm inviting you to join my household "${household.name}" on PlanEat! Plan weekly menus and shopping lists together.\n\nJoin here: https://xavierpa91.github.io/planeat/\nInvite code: ${household.invite_code ?? ''}`
             )}`}
             target="_blank"
             rel="noopener noreferrer"
