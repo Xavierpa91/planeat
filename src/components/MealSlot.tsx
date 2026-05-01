@@ -72,14 +72,22 @@ export function MealSlot({ label, slot, onEdit, onClear, onViewRecipe, onAddExtr
                   {extraIcon && <FoodIcon kind={extraIcon} size={16} />}
                   {extra.recipe?.name}
                 </button>
-                {onRemoveExtra && (
+                <div className="flex items-center gap-0.5 shrink-0 mt-0.5">
                   <button
-                    onClick={() => onRemoveExtra(extra.id)}
-                    className="text-muted-2 hover:text-danger transition-colors shrink-0 mt-0.5"
+                    onClick={onAddExtra}
+                    className="text-muted-2 hover:text-accent transition-colors p-0.5"
                   >
-                    <X className="w-3.5 h-3.5" />
+                    <Pencil className="w-3 h-3" />
                   </button>
-                )}
+                  {onRemoveExtra && (
+                    <button
+                      onClick={() => onRemoveExtra(extra.id)}
+                      className="text-muted-2 hover:text-danger transition-colors p-0.5"
+                    >
+                      <X className="w-3.5 h-3.5" />
+                    </button>
+                  )}
+                </div>
               </div>
             )
           })}
