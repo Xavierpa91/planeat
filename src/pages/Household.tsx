@@ -256,7 +256,7 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
       </div>
 
       {/* Multi-household switcher */}
-      {passedHouseholds && passedHouseholds.length > 0 && (
+      {passedHouseholds && (
         <div className="bg-surface rounded-2xl border border-line p-4 space-y-3 shadow-[var(--shadow-card)]">
           <h3 className="font-semibold text-ink flex items-center gap-2">
             <Home className="w-4 h-4 text-accent" />
