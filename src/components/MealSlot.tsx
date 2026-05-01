@@ -40,7 +40,7 @@ export function MealSlot({ label, slot, onEdit, onClear, onViewRecipe, onAddExtr
               onClick={handleNameClick}
               className="text-sm text-ink text-left hover:text-accent-strong transition-colors flex-1 flex items-center gap-1.5"
             >
-              {recipeIcon && <FoodIcon kind={recipeIcon} size={16} />}
+              {recipeIcon && <span className="text-accent"><FoodIcon kind={recipeIcon} size={18} /></span>}
               <span>{mealName}</span>
             </button>
             <div className="flex items-center gap-0.5 shrink-0 mt-0.5">
@@ -69,7 +69,7 @@ export function MealSlot({ label, slot, onEdit, onClear, onViewRecipe, onAddExtr
                   onClick={() => extra.recipe_id && onViewRecipe ? onViewRecipe(extra.recipe_id) : undefined}
                   className="text-sm text-ink flex items-center gap-1.5 flex-1 text-left hover:text-accent-strong transition-colors"
                 >
-                  {extraIcon && <FoodIcon kind={extraIcon} size={16} />}
+                  {extraIcon && <span className="text-accent"><FoodIcon kind={extraIcon} size={18} /></span>}
                   {extra.recipe?.name}
                 </button>
                 <div className="flex items-center gap-0.5 shrink-0 mt-0.5">

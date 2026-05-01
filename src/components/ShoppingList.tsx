@@ -2,7 +2,7 @@ import { useState } from 'react'
 import {
   Check, Copy, Share2, ChevronDown, Plus, X,
   Beef, Fish, Milk, Leaf, Apple, GlassWater,
-  Wheat, Package, Flame, Circle,
+  Wheat, Package, Flame, Circle, CheckCheck, Trash2,
 } from 'lucide-react'
 import { getCategory, CATEGORIES, CATEGORY_META } from '../lib/categories'
 import { shareList } from '../lib/share'
@@ -207,6 +207,24 @@ export function ShoppingList({ ingredients, showChart }: ShoppingListProps) {
           className="px-3 py-2 bg-accent text-white rounded-xl text-sm font-semibold disabled:opacity-40 pressable"
         >
           <Plus className="w-4 h-4" />
+        </button>
+      </div>
+
+      {/* Select all / Clear all */}
+      <div className="flex gap-2">
+        <button
+          onClick={() => setChecked(new Set(allItems))}
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 border border-line rounded-full text-xs font-semibold text-ink-2 hover:bg-bg transition-colors pressable"
+        >
+          <CheckCheck className="w-3.5 h-3.5" />
+          {t('shopping.selectAll')}
+        </button>
+        <button
+          onClick={() => setChecked(new Set())}
+          className="flex-1 flex items-center justify-center gap-1.5 px-3 py-1.5 border border-line rounded-full text-xs font-semibold text-ink-2 hover:bg-bg transition-colors pressable"
+        >
+          <Trash2 className="w-3.5 h-3.5" />
+          {t('shopping.clearAll')}
         </button>
       </div>
 

@@ -19,9 +19,11 @@ export function FoodIcon({ kind, size = 22 }: FoodIconProps) {
     case 'pasta':
       return (
         <svg {...common}>
-          <path d="M4 14h16" />
-          <path d="M5 14c0-3 1-6 7-6s6 3 6 6" />
-          <path d="M8 14v5M12 14v5M16 14v5" />
+          <path d="M4 18c2-6 5-10 8-10s6 4 8 10" />
+          <path d="M6 14c2-4 4-7 6-7s4 3 6 7" />
+          <path d="M9 10c1-2 2-4 3-4s2 2 3 4" />
+          <path d="M3 19h18" />
+          <path d="M10 19c0 1 .5 2 2 2s2-1 2-2" />
         </svg>
       )
     case 'salad':

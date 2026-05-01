@@ -82,6 +82,8 @@ export const en: Record<string, string> = {
   'shopping.share': 'Share',
   'shopping.copied': 'Copied!',
   'shopping.sent': 'Sent!',
+  'shopping.selectAll': 'Select all',
+  'shopping.clearAll': 'Clear all',
 
   // Shopping categories
   'cat.carnes': 'Meats',
