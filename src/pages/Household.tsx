@@ -31,6 +31,9 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
   const [creating, setCreating] = useState(false)
   const [isRenaming, setIsRenaming] = useState(false)
   const [newHouseholdName, setNewHouseholdName] = useState('')
+  const [joinCode, setJoinCode] = useState('')
+  const [joinError, setJoinError] = useState('')
+  const [joining, setJoining] = useState(false)
 
   // i18n
   const { t, locale, setLocale } = useI18n()
@@ -167,18 +170,6 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
     setNotificationPrefs(updated)
   }
 
-  if (loading) {
-    return (
-      <div className="flex justify-center py-12">
-        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
-      </div>
-    )
-  }
-
-  const [joinCode, setJoinCode] = useState('')
-  const [joinError, setJoinError] = useState('')
-  const [joining, setJoining] = useState(false)
-
   const handleJoinByCode = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!joinCode.trim()) return
@@ -191,6 +182,14 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
       setJoinError(locale === 'es' ? 'Codigo no valido' : 'Invalid code')
     }
     setJoining(false)
+  }
+
+  if (loading) {
+    return (
+      <div className="flex justify-center py-12">
+        <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
+      </div>
+    )
   }
 
   if (!household) {
