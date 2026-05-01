@@ -23,10 +23,10 @@ export function ShoppingPage({ householdId }: ShoppingPageProps) {
         <h2 className="text-lg font-extrabold text-ink tracking-[-0.02em] font-[family-name:var(--font-display)]">{t('shopping.title')}</h2>
         <button
           onClick={() => setShowChart(!showChart)}
-          className={`p-2 rounded-lg transition-colors pressable ${showChart ? 'bg-accent-soft text-accent-strong' : 'text-muted-2 hover:text-ink'}`}
-          title={t('shopping.chart')}
+          className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-colors pressable ${showChart ? 'bg-accent-soft text-accent-strong' : 'text-muted-2 hover:text-ink'}`}
         >
-          <BarChart3 className="w-5 h-5" />
+          <BarChart3 className="w-4 h-4" />
+          {t('shopping.chart')}
         </button>
       </div>
 
