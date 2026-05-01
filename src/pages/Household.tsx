@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink, Globe, Save } from 'lucide-react'
+import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink, Globe, Save, Pencil, Check } from 'lucide-react'
 import { useHousehold } from '../hooks/useHousehold'
 import { supabase } from '../lib/supabase'
 import { useI18n } from '../lib/i18n'
@@ -18,11 +18,13 @@ interface HouseholdPageProps {
 }
 
 export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps) {
-  const { household, loading, createHousehold, inviteMember } = useHousehold(userId)
+  const { household, loading, createHousehold, inviteMember, renameHousehold } = useHousehold(userId)
   const [householdName, setHouseholdName] = useState('')
   const [inviteEmail, setInviteEmail] = useState('')
   const [inviteSent, setInviteSent] = useState(false)
   const [creating, setCreating] = useState(false)
+  const [isRenaming, setIsRenaming] = useState(false)
+  const [newHouseholdName, setNewHouseholdName] = useState('')
 
   // i18n
   const { t, locale, setLocale } = useI18n()
@@ -200,10 +202,48 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-lg font-extrabold text-ink tracking-[-0.02em] flex items-center gap-2 font-[family-name:var(--font-display)]">
-          <Home className="w-5 h-5 text-accent-strong" />
-          {household.name}
-        </h2>
+        {isRenaming ? (
+          <div className="flex items-center gap-2">
+            <Home className="w-5 h-5 text-accent-strong shrink-0" />
+            <input
+              type="text"
+              value={newHouseholdName}
+              onChange={e => setNewHouseholdName(e.target.value)}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && newHouseholdName.trim()) {
+                  renameHousehold(newHouseholdName.trim())
+                  setIsRenaming(false)
+                }
+              }}
+              className="flex-1 text-lg font-extrabold text-ink border-b-2 border-accent bg-transparent focus:outline-none font-[family-name:var(--font-display)]"
+              autoFocus
+            />
+            <button
+              onClick={() => {
+                if (newHouseholdName.trim()) {
+                  renameHousehold(newHouseholdName.trim())
+                  setIsRenaming(false)
+                }
+              }}
+              className="text-accent-strong hover:text-accent transition-colors p-1"
+            >
+              <Check className="w-5 h-5" />
+            </button>
+          </div>
+        ) : (
+          <div className="flex items-center gap-2">
+            <h2 className="text-lg font-extrabold text-ink tracking-[-0.02em] flex items-center gap-2 font-[family-name:var(--font-display)]">
+              <Home className="w-5 h-5 text-accent-strong" />
+              {household.name}
+            </h2>
+            <button
+              onClick={() => { setNewHouseholdName(household.name); setIsRenaming(true) }}
+              className="text-muted-2 hover:text-accent transition-colors p-1"
+            >
+              <Pencil className="w-3.5 h-3.5" />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Invite member */}
@@ -230,6 +270,26 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
         </form>
         {inviteSent && (
           <p className="text-xs text-accent-strong">{t('household.inviteSent')}</p>
+        )}
+        <p className="text-xs text-muted">
+          {locale === 'es'
+            ? 'La invitacion se activa cuando el invitado inicie sesion con ese email en PlanEat.'
+            : 'The invite activates when the guest signs in with that email on PlanEat.'}
+        </p>
+        {inviteEmail.trim() && inviteSent && (
+          <a
+            href={`https://wa.me/?text=${encodeURIComponent(
+              locale === 'es'
+                ? `Te invito a unirte a mi hogar "${household.name}" en PlanEat! Entra con tu cuenta de Google (${inviteEmail}) aqui: https://xavierpa91.github.io/planeat/`
+                : `I'm inviting you to join my household "${household.name}" on PlanEat! Sign in with your Google account (${inviteEmail}) here: https://xavierpa91.github.io/planeat/`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="flex items-center justify-center gap-2 px-4 py-2 bg-green-600 text-white rounded-full text-sm font-semibold hover:bg-green-700 transition-colors pressable"
+          >
+            <MessageCircle className="w-4 h-4" />
+            {locale === 'es' ? 'Enviar invitacion por WhatsApp' : 'Send invite via WhatsApp'}
+          </a>
         )}
       </div>
 

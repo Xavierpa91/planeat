@@ -60,5 +60,15 @@ export function useHousehold(userId: string | undefined) {
     if (error) throw error
   }
 
-  return { household, loading, createHousehold, inviteMember, refetch: fetchHousehold }
+  const renameHousehold = async (newName: string) => {
+    if (!household) throw new Error('No household')
+    const { error } = await supabase
+      .from('households')
+      .update({ name: newName })
+      .eq('id', household.id)
+    if (error) throw error
+    setHousehold({ ...household, name: newName })
+  }
+
+  return { household, loading, createHousehold, inviteMember, renameHousehold, refetch: fetchHousehold }
 }
