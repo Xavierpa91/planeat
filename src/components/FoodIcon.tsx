@@ -99,3 +99,25 @@ export function FoodIcon({ kind, size = 22 }: FoodIconProps) {
 }
 
 export const FOOD_ICONS = ['pasta', 'salad', 'chicken', 'fish', 'soup', 'bowl', 'pizza', 'rice', 'egg', 'wrap'] as const
+
+// Auto-detect icon from recipe name
+const ICON_KEYWORDS: Record<string, string[]> = {
+  pasta: ['macarron', 'espagueti', 'pasta', 'tallarín', 'fideo', 'lasaña', 'canelón', 'ravioli', 'penne'],
+  chicken: ['pollo', 'chicken'],
+  fish: ['salmon', 'merluza', 'atun', 'bacalao', 'pescado', 'sardina', 'gamba', 'langostino'],
+  salad: ['ensalada', 'salad'],
+  soup: ['sopa', 'crema', 'caldo', 'guiso', 'lenteja', 'potaje'],
+  pizza: ['pizza'],
+  rice: ['arroz', 'paella', 'risotto'],
+  egg: ['tortilla', 'huevo', 'revuelto'],
+  wrap: ['wrap', 'burrito', 'fajita', 'taco'],
+  bowl: ['bowl', 'poke'],
+}
+
+export function guessIcon(name: string): string | undefined {
+  const lower = name.toLowerCase()
+  for (const [icon, keywords] of Object.entries(ICON_KEYWORDS)) {
+    if (keywords.some(kw => lower.includes(kw))) return icon
+  }
+  return undefined
+}

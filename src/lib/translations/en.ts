@@ -152,6 +152,6 @@ export const en: Record<string, string> = {
   'general.delete': 'Delete',
   'shopping.addItem': 'Add product',
   'shopping.addItemPlaceholder': 'E.g.: Bread',
-  'shopping.chart': 'Breakdown',
+  'shopping.chart': 'Chart by category',
   'shopping.chartTitle': 'Category breakdown',
 }

@@ -1,5 +1,5 @@
 import { Plus, X } from 'lucide-react'
-import { FoodIcon } from './FoodIcon'
+import { FoodIcon, guessIcon } from './FoodIcon'
 import { useI18n } from '../lib/i18n'
 import type { MenuSlot as MenuSlotType } from '../types'
 
@@ -16,7 +16,7 @@ interface MealSlotProps {
 export function MealSlot({ label, slot, onEdit, onClear, onAddExtra, onRemoveExtra }: MealSlotProps) {
   const { t } = useI18n()
   const mealName = slot?.recipe?.name ?? slot?.custom_meal
-  const recipeIcon = slot?.recipe?.icon
+  const recipeIcon = slot?.recipe?.icon ?? (mealName ? guessIcon(mealName) : undefined)
   const extras = slot?.extra_recipes ?? []
 
   return (
@@ -42,22 +42,25 @@ export function MealSlot({ label, slot, onEdit, onClear, onAddExtra, onRemoveExt
           </div>
 
           {/* Extra recipes */}
-          {extras.map(extra => (
-            <div key={extra.id} className="flex items-center justify-between gap-1">
-              <span className="text-sm text-ink flex items-center gap-1.5">
-                {extra.recipe?.icon && <FoodIcon kind={extra.recipe.icon} size={16} />}
-                {extra.recipe?.name}
-              </span>
-              {onRemoveExtra && (
-                <button
-                  onClick={() => onRemoveExtra(extra.id)}
-                  className="text-muted-2 hover:text-danger transition-colors shrink-0"
-                >
-                  <X className="w-3 h-3" />
-                </button>
-              )}
-            </div>
-          ))}
+          {extras.map(extra => {
+            const extraIcon = extra.recipe?.icon ?? (extra.recipe?.name ? guessIcon(extra.recipe.name) : undefined)
+            return (
+              <div key={extra.id} className="flex items-start justify-between gap-1">
+                <span className="text-sm text-ink flex items-center gap-1.5 flex-1">
+                  {extraIcon && <FoodIcon kind={extraIcon} size={16} />}
+                  {extra.recipe?.name}
+                </span>
+                {onRemoveExtra && (
+                  <button
+                    onClick={() => onRemoveExtra(extra.id)}
+                    className="text-muted-2 hover:text-danger transition-colors shrink-0 mt-0.5"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            )
+          })}
 
           {/* Add extra button */}
           {onAddExtra && (

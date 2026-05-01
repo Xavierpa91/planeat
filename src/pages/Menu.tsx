@@ -1,5 +1,5 @@
 import { useState, useRef } from 'react'
-import { ChevronLeft, ChevronRight, Copy, Calendar, Settings2, LayoutList, CalendarDays, Grid3X3 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, Copy, Calendar, LayoutList, CalendarDays, Grid3X3 } from 'lucide-react'
 import { WeekGrid } from '../components/WeekGrid'
 import { useMenu } from '../hooks/useMenu'
 import { useRecipes } from '../hooks/useRecipes'
@@ -20,7 +20,6 @@ export function MenuPage({ householdId }: MenuPageProps) {
   const [showCopyPicker, setShowCopyPicker] = useState(false)
   const [copyTarget, setCopyTarget] = useState('')
   const [activeMealTypes, setActiveMealTypes] = useState<MealType[]>(DEFAULT_MEAL_TYPES)
-  const [showMealConfig, setShowMealConfig] = useState(false)
   const datePickerRef = useRef<HTMLInputElement>(null)
   type MenuLayout = 'stacked' | 'focus' | 'calendar'
   const [layout, setLayout] = useState<MenuLayout>(() => {
@@ -99,16 +98,24 @@ export function MenuPage({ householdId }: MenuPageProps) {
         </button>
       </div>
 
-      {/* Meal types config + layout selector */}
-      <div className="flex items-center justify-between">
-        <button
-          onClick={() => setShowMealConfig(!showMealConfig)}
-          className="flex items-center gap-1.5 text-xs font-semibold text-muted hover:text-ink transition-colors pressable"
-        >
-          <Settings2 className="w-3.5 h-3.5" />
-          {t('menu.addSlots')}
-        </button>
-        <div className="flex items-center gap-0.5 bg-surface-2 rounded-lg p-0.5 border border-line-2">
+      {/* Meal type pills + layout selector */}
+      <div className="flex items-center justify-between gap-2">
+        <div className="flex gap-1.5 flex-wrap flex-1">
+          {(Object.keys(ALL_MEAL_TYPES) as MealType[]).map(mt => (
+            <button
+              key={mt}
+              onClick={() => toggleMealType(mt)}
+              className={`px-2.5 py-1 rounded-full text-[11px] font-semibold border transition-colors pressable ${
+                activeMealTypes.includes(mt)
+                  ? 'bg-accent-soft border-accent/30 text-accent-ink'
+                  : 'bg-surface border-line text-muted-2'
+              }`}
+            >
+              {ALL_MEAL_TYPES[mt]}
+            </button>
+          ))}
+        </div>
+        <div className="flex items-center gap-0.5 bg-surface-2 rounded-lg p-0.5 border border-line-2 shrink-0">
           {([
             { key: 'stacked' as MenuLayout, icon: LayoutList },
             { key: 'focus' as MenuLayout, icon: CalendarDays },
@@ -130,24 +137,6 @@ export function MenuPage({ householdId }: MenuPageProps) {
         </div>
       </div>
 
-      {/* Meal type selector */}
-      {showMealConfig && (
-        <div className="flex gap-2 flex-wrap">
-          {(Object.keys(ALL_MEAL_TYPES) as MealType[]).map(mt => (
-            <button
-              key={mt}
-              onClick={() => toggleMealType(mt)}
-              className={`px-3 py-1.5 rounded-full text-xs font-semibold border transition-colors pressable ${
-                activeMealTypes.includes(mt)
-                  ? 'bg-accent-soft border-accent/30 text-accent-ink'
-                  : 'bg-surface border-line text-muted'
-              }`}
-            >
-              {ALL_MEAL_TYPES[mt]}
-            </button>
-          ))}
-        </div>
-      )}
 
       {loading ? (
         <div className="flex justify-center py-12">
