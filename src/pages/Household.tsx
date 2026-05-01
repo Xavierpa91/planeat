@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink, Globe, Save, Pencil, Check } from 'lucide-react'
+import { Home, UserPlus, Mail, Bell, MessageCircle, ExternalLink, Globe, Save, Pencil, Check, Plus, LogOut } from 'lucide-react'
 import { useHousehold } from '../hooks/useHousehold'
 import { supabase } from '../lib/supabase'
 import { useI18n } from '../lib/i18n'
@@ -15,9 +15,15 @@ const DAY_KEYS = ['day.sun', 'day.mon', 'day.tue', 'day.wed', 'day.thu', 'day.fr
 interface HouseholdPageProps {
   userId: string
   onHouseholdCreated: () => void
+  households?: Household[]
+  activeHouseholdId?: string
+  onSwitchHousehold?: (id: string) => void
+  onLeaveHousehold?: (id: string) => void
 }
 
-export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps) {
+import type { Household } from '../types'
+
+export function HouseholdPage({ userId, onHouseholdCreated, households: passedHouseholds, activeHouseholdId, onSwitchHousehold, onLeaveHousehold }: HouseholdPageProps) {
   const { household, loading, createHousehold, inviteMember, renameHousehold } = useHousehold(userId)
   const [householdName, setHouseholdName] = useState('')
   const [inviteEmail, setInviteEmail] = useState('')
@@ -248,6 +254,68 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
           </div>
         )}
       </div>
+
+      {/* Multi-household switcher */}
+      {passedHouseholds && passedHouseholds.length > 0 && (
+        <div className="bg-surface rounded-2xl border border-line p-4 space-y-3 shadow-[var(--shadow-card)]">
+          <h3 className="font-semibold text-ink flex items-center gap-2">
+            <Home className="w-4 h-4 text-accent" />
+            {locale === 'es' ? 'Mis hogares' : 'My households'}
+          </h3>
+          <div className="space-y-2">
+            {passedHouseholds.map(hh => (
+              <div
+                key={hh.id}
+                className={`flex items-center justify-between p-3 rounded-xl border transition-colors ${
+                  hh.id === activeHouseholdId
+                    ? 'border-accent bg-accent-soft'
+                    : 'border-line hover:bg-bg'
+                }`}
+              >
+                <button
+                  onClick={() => onSwitchHousehold?.(hh.id)}
+                  className="flex items-center gap-2 flex-1 text-left"
+                >
+                  <Home className={`w-4 h-4 ${hh.id === activeHouseholdId ? 'text-accent-strong' : 'text-muted-2'}`} />
+                  <span className={`text-sm font-semibold ${hh.id === activeHouseholdId ? 'text-accent-strong' : 'text-ink'}`}>
+                    {hh.name}
+                  </span>
+                  {hh.id === activeHouseholdId && (
+                    <span className="text-[10px] font-semibold text-accent bg-accent-soft px-1.5 py-0.5 rounded-full">
+                      {locale === 'es' ? 'Activo' : 'Active'}
+                    </span>
+                  )}
+                </button>
+                {hh.id !== activeHouseholdId && onLeaveHousehold && (
+                  <button
+                    onClick={() => {
+                      if (confirm(locale === 'es' ? `Salir de "${hh.name}"?` : `Leave "${hh.name}"?`)) {
+                        onLeaveHousehold(hh.id)
+                      }
+                    }}
+                    className="text-muted-2 hover:text-danger transition-colors p-1"
+                    title={locale === 'es' ? 'Salir del hogar' : 'Leave household'}
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+            ))}
+          </div>
+          <button
+            onClick={() => {
+              const name = prompt(locale === 'es' ? 'Nombre del nuevo hogar:' : 'New household name:')
+              if (name?.trim()) {
+                createHousehold(name.trim()).then(() => onHouseholdCreated())
+              }
+            }}
+            className="w-full flex items-center justify-center gap-2 px-4 py-2 border border-dashed border-line rounded-xl text-sm text-muted hover:text-accent hover:border-accent/30 transition-colors pressable"
+          >
+            <Plus className="w-4 h-4" />
+            {locale === 'es' ? 'Crear otro hogar' : 'Create another household'}
+          </button>
+        </div>
+      )}
 
       {/* Invite member */}
       <div className="bg-surface rounded-2xl border border-line p-4 space-y-4 shadow-[var(--shadow-card)]">

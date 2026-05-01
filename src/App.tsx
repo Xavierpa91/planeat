@@ -11,7 +11,7 @@ import { HouseholdPage } from './pages/Household'
 
 function AuthenticatedApp() {
   const { user } = useAuth()
-  const { household, loading, refetch } = useHousehold(user?.id)
+  const { household, households, loading, refetch, switchHousehold, leaveHousehold } = useHousehold(user?.id)
 
   if (loading) {
     return (
@@ -31,7 +31,16 @@ function AuthenticatedApp() {
         <Route path="/" element={<MenuPage householdId={household.id} householdName={household.name} />} />
         <Route path="/recipes" element={<RecipesPage householdId={household.id} />} />
         <Route path="/shopping" element={<ShoppingPage householdId={household.id} />} />
-        <Route path="/household" element={<HouseholdPage userId={user!.id} onHouseholdCreated={refetch} />} />
+        <Route path="/household" element={
+          <HouseholdPage
+            userId={user!.id}
+            onHouseholdCreated={refetch}
+            households={households}
+            activeHouseholdId={household.id}
+            onSwitchHousehold={switchHousehold}
+            onLeaveHousehold={leaveHousehold}
+          />
+        } />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Route>
     </Routes>
