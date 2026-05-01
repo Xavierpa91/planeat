@@ -375,6 +375,26 @@ export function HouseholdPage({ userId, onHouseholdCreated, households: passedHo
             <Plus className="w-4 h-4" />
             {locale === 'es' ? 'Crear otro hogar' : 'Create another household'}
           </button>
+
+          {/* Join by code */}
+          <form onSubmit={handleJoinByCode} className="flex gap-2">
+            <input
+              type="text"
+              value={joinCode}
+              onChange={e => setJoinCode(e.target.value.toUpperCase())}
+              placeholder={locale === 'es' ? 'Codigo de invitacion' : 'Invite code'}
+              className="flex-1 px-3 py-2 border border-line rounded-xl text-sm text-center font-mono tracking-widest uppercase focus:outline-none focus:ring-2 focus:ring-accent"
+              maxLength={6}
+            />
+            <button
+              type="submit"
+              disabled={!joinCode.trim() || joining}
+              className="px-4 py-2 border-2 border-accent text-accent-strong rounded-full text-sm font-semibold disabled:opacity-40 hover:bg-accent-soft transition-colors pressable"
+            >
+              {joining ? '...' : (locale === 'es' ? 'Unirme' : 'Join')}
+            </button>
+          </form>
+          {joinError && <p className="text-xs text-danger text-center">{joinError}</p>}
         </div>
       )}
 
