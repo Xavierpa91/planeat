@@ -32,11 +32,14 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
   const [waApiKey, setWaApiKey] = useState('')
   const [waDailyEnabled, setWaDailyEnabled] = useState(false)
   const [waDailyHour, setWaDailyHour] = useState(9)
+  const [waDailyDays, setWaDailyDays] = useState<number[]>([1, 2, 3, 4, 5]) // Mon-Fri
   const [waWeeklyEnabled, setWaWeeklyEnabled] = useState(false)
   const [waWeeklyDay, setWaWeeklyDay] = useState(1)
   const [waWeeklyHour, setWaWeeklyHour] = useState(8)
   const [waSaving, setWaSaving] = useState(false)
   const [waSaved, setWaSaved] = useState(false)
+  const [waTesting, setWaTesting] = useState(false)
+  const [waTestResult, setWaTestResult] = useState<string | null>(null)
 
   // Load WhatsApp config from Supabase
   useEffect(() => {
@@ -52,6 +55,7 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
           setWaApiKey(data.api_key ?? '')
           setWaDailyEnabled(data.daily_enabled ?? false)
           setWaDailyHour(data.daily_hour ?? 9)
+          setWaDailyDays(data.daily_days ?? [1, 2, 3, 4, 5])
           setWaWeeklyEnabled(data.weekly_enabled ?? false)
           setWaWeeklyDay(data.weekly_day ?? 1)
           setWaWeeklyHour(data.weekly_hour ?? 8)
@@ -66,6 +70,7 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
       p_api_key: waApiKey,
       p_daily_enabled: waDailyEnabled,
       p_daily_hour: waDailyHour,
+      p_daily_days: waDailyDays,
       p_weekly_enabled: waWeeklyEnabled,
       p_weekly_day: waWeeklyDay,
       p_weekly_hour: waWeeklyHour,
@@ -73,6 +78,28 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
     setWaSaving(false)
     setWaSaved(true)
     setTimeout(() => setWaSaved(false), 2000)
+  }
+
+  const testWhatsApp = async () => {
+    if (!waPhone || !waApiKey) return
+    setWaTesting(true)
+    setWaTestResult(null)
+    try {
+      const msg = encodeURIComponent('✅ PlanEat - Test OK!\nTu conexion con WhatsApp funciona correctamente.')
+      const url = `https://api.callmebot.com/whatsapp.php?phone=${waPhone}&text=${msg}&apikey=${waApiKey}`
+      const res = await fetch(url)
+      setWaTestResult(res.ok ? (locale === 'es' ? 'Mensaje enviado! Revisa tu WhatsApp.' : 'Message sent! Check your WhatsApp.') : (locale === 'es' ? 'Error al enviar. Revisa telefono y API key.' : 'Send error. Check phone and API key.'))
+    } catch {
+      setWaTestResult(locale === 'es' ? 'Error de conexion.' : 'Connection error.')
+    }
+    setWaTesting(false)
+    setTimeout(() => setWaTestResult(null), 5000)
+  }
+
+  const toggleDailyDay = (day: number) => {
+    setWaDailyDays(prev =>
+      prev.includes(day) ? prev.filter(d => d !== day) : [...prev, day].sort()
+    )
   }
 
   // Notification prefs
@@ -325,17 +352,40 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
             </button>
           </div>
           {waDailyEnabled && (
-            <div className="flex items-center gap-3">
-              <label className="text-sm text-muted w-12 shrink-0">{t('household.notifHour')}</label>
-              <select
-                value={waDailyHour}
-                onChange={e => setWaDailyHour(Number(e.target.value))}
-                className="flex-1 px-3 py-2 border border-line rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent bg-surface"
-              >
-                {Array.from({ length: 24 }, (_, i) => (
-                  <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>
-                ))}
-              </select>
+            <div className="space-y-3">
+              <div className="flex items-center gap-3">
+                <label className="text-sm text-muted w-12 shrink-0">{t('household.notifHour')}</label>
+                <select
+                  value={waDailyHour}
+                  onChange={e => setWaDailyHour(Number(e.target.value))}
+                  className="flex-1 px-3 py-2 border border-line rounded-xl text-sm focus:outline-none focus:ring-2 focus:ring-accent bg-surface"
+                >
+                  {Array.from({ length: 24 }, (_, i) => (
+                    <option key={i} value={i}>{String(i).padStart(2, '0')}:00</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="text-xs text-muted block mb-1.5">{locale === 'es' ? 'Dias activos' : 'Active days'}</label>
+                <div className="flex gap-1">
+                  {[1, 2, 3, 4, 5, 6, 0].map(day => {
+                    const labels = locale === 'es' ? ['D', 'L', 'M', 'X', 'J', 'V', 'S'] : ['S', 'M', 'T', 'W', 'T', 'F', 'S']
+                    const isActive = waDailyDays.includes(day)
+                    return (
+                      <button
+                        key={day}
+                        type="button"
+                        onClick={() => toggleDailyDay(day)}
+                        className={`w-9 h-9 rounded-lg text-xs font-bold transition-colors pressable ${
+                          isActive ? 'bg-green-500 text-white' : 'bg-surface-2 text-muted border border-line'
+                        }`}
+                      >
+                        {labels[day]}
+                      </button>
+                    )
+                  })}
+                </div>
+              </div>
             </div>
           )}
         </div>
@@ -384,15 +434,29 @@ export function HouseholdPage({ userId, onHouseholdCreated }: HouseholdPageProps
           )}
         </div>
 
-        {/* Save button */}
-        <button
-          onClick={saveWhatsAppConfig}
-          disabled={!waPhone || !waApiKey || waSaving}
-          className="w-full flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-full text-sm font-semibold disabled:opacity-40 hover:bg-green-700 transition-colors pressable"
-        >
-          <Save className="w-4 h-4" />
-          {waSaved ? (locale === 'es' ? 'Guardado!' : 'Saved!') : waSaving ? (locale === 'es' ? 'Guardando...' : 'Saving...') : (locale === 'es' ? 'Guardar configuracion' : 'Save configuration')}
-        </button>
+        {/* Save & Test buttons */}
+        <div className="flex gap-2">
+          <button
+            onClick={saveWhatsAppConfig}
+            disabled={!waPhone || !waApiKey || waSaving}
+            className="flex-1 flex items-center justify-center gap-2 px-4 py-2.5 bg-green-600 text-white rounded-full text-sm font-semibold disabled:opacity-40 hover:bg-green-700 transition-colors pressable"
+          >
+            <Save className="w-4 h-4" />
+            {waSaved ? (locale === 'es' ? 'Guardado!' : 'Saved!') : waSaving ? (locale === 'es' ? 'Guardando...' : 'Saving...') : (locale === 'es' ? 'Guardar' : 'Save')}
+          </button>
+          <button
+            onClick={testWhatsApp}
+            disabled={!waPhone || !waApiKey || waTesting}
+            className="flex items-center justify-center gap-2 px-4 py-2.5 border border-green-600 text-green-600 rounded-full text-sm font-semibold disabled:opacity-40 hover:bg-green-50 transition-colors pressable"
+          >
+            {waTesting ? '...' : 'Test'}
+          </button>
+        </div>
+        {waTestResult && (
+          <p className={`text-xs font-semibold text-center ${waTestResult.includes('Error') ? 'text-danger' : 'text-green-600'}`}>
+            {waTestResult}
+          </p>
+        )}
 
         <a
           href="https://www.callmebot.com/blog/free-api-whatsapp-messages/"

@@ -60,9 +60,9 @@ export function MenuPage({ householdId, householdName }: MenuPageProps) {
     <div className="space-y-4 p-4">
       {/* Household name */}
       {householdName && (
-        <div className="flex items-center gap-1.5 text-xs text-muted">
-          <Home className="w-3.5 h-3.5" />
-          <span className="font-semibold">{householdName}</span>
+        <div className="flex flex-col items-center gap-1 py-1">
+          <Home className="w-6 h-6 text-accent" />
+          <span className="text-sm font-bold text-accent-strong">{householdName}</span>
         </div>
       )}
 

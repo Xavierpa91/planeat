@@ -41,6 +41,7 @@ interface WhatsAppConfig {
   api_key: string
   daily_enabled: boolean
   daily_hour: number
+  daily_days: number[]
   weekly_enabled: boolean
   weekly_day: number
   weekly_hour: number
@@ -144,8 +145,9 @@ Deno.serve(async (_req) => {
       const weekStart = formatDate(getMonday(today))
       const dayOfWeek = (today.getDay() + 6) % 7 // Convert to Mon=0
 
-      // Daily reminder
-      if (config.daily_enabled && currentHour === config.daily_hour) {
+      // Daily reminder (check day is in daily_days)
+      const activeDays = config.daily_days ?? [1, 2, 3, 4, 5]
+      if (config.daily_enabled && currentHour === config.daily_hour && activeDays.includes(currentDay)) {
         const slots = await getMenuForDay(householdId, weekStart, dayOfWeek)
         if (slots.length > 0) {
           const lines = ['🍽️ *PlanEat - Menu de hoy*\n']
