@@ -28,14 +28,14 @@
 /* Dark mode */
 [data-theme="dark"] {
   --color-bg: #161310;
-  --color-surface: #221e1a;
-  --color-surface-2: #1c1915;
+  --color-surface: #2a2420;
+  --color-surface-2: #231e1a;
   --color-ink: #f5e8d8;
   --color-ink-2: #dcc8b0;
-  --color-muted: #a8937e;
-  --color-muted-2: #7a6b5c;
-  --color-line: #3d342a;
-  --color-line-2: #332b22;
+  --color-muted: #b8a48e;
+  --color-muted-2: #8a7a6a;
+  --color-line: #453a30;
+  --color-line-2: #3a3028;
   --color-accent: oklch(0.72 0.14 45);
   --color-accent-strong: oklch(0.80 0.15 48);
   --color-accent-soft: oklch(0.28 0.08 45);
@@ -45,6 +45,12 @@
   --shadow-card: 0 1px 0 rgba(0,0,0,0.15), 0 2px 8px rgba(0,0,0,0.25);
   --shadow-elev: 0 1px 0 rgba(0,0,0,0.25), 0 8px 28px rgba(0,0,0,0.45);
 }
+
+/* Dark mode: force white text on accent buttons */
+[data-theme="dark"] .bg-accent { color: #ffffff; }
+[data-theme="dark"] .bg-accent-strong { color: #ffffff; }
+[data-theme="dark"] .bg-green-600 { color: #ffffff; }
+[data-theme="dark"] .bg-ink { color: var(--color-bg); }
 
 * {
   -webkit-tap-highlight-color: transparent;

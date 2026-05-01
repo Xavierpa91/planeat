@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
 import { MealSlot } from './MealSlot'
 import { FoodIcon } from './FoodIcon'
@@ -23,6 +24,7 @@ interface WeekGridProps {
 
 export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, onSetSlot, onClearSlot, onAddExtra, onRemoveExtra, onMaterializeDefault }: WeekGridProps) {
   const { t, locale } = useI18n()
+  const navigate = useNavigate()
   const [editingSlot, setEditingSlot] = useState<{ day: number; meal: MealType; addingExtra?: boolean } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
@@ -112,6 +114,10 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
     setCustomMeal('')
   }
 
+  const viewRecipe = (recipeId: string) => {
+    navigate('/recipes', { state: { highlightRecipe: recipeId } })
+  }
+
   // ─── Layout: Stacked (default, original layout) ───
   const renderStacked = () => {
     const todayStr = new Date().toDateString()
@@ -151,6 +157,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
                     isEditing={isEditing}
                     onEdit={() => openSlotEditor(dayIndex, mealType)}
                     onClear={() => onClearSlot(dayIndex, mealType)}
+                    onViewRecipe={viewRecipe}
                     onAddExtra={onAddExtra ? () => openSlotEditor(dayIndex, mealType, true) : undefined}
                     onRemoveExtra={onRemoveExtra}
                   />
@@ -243,7 +250,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
                       )}
                       <div className="flex-1 min-w-0">
                         <button
-                          onClick={() => openSlotEditor(selectedDay, mealType)}
+                          onClick={() => slot?.recipe_id ? viewRecipe(slot.recipe_id) : openSlotEditor(selectedDay, mealType)}
                           className="text-sm font-semibold text-ink hover:text-accent-strong transition-colors text-left"
                         >
                           {mealName}

@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useLocation } from 'react-router-dom'
 import { Plus, Pencil, Trash2, ShieldAlert } from 'lucide-react'
 import { RecipeForm } from '../components/RecipeForm'
 import { FoodIcon } from '../components/FoodIcon'
@@ -16,10 +17,36 @@ type RecipeTab = 'mine' | 'default'
 export function RecipesPage({ householdId }: RecipesPageProps) {
   const { recipes, loading, addRecipe, updateRecipe, deleteRecipe } = useRecipes(householdId)
   const { t, locale } = useI18n()
+  const location = useLocation()
   const [showForm, setShowForm] = useState(false)
   const [editingRecipe, setEditingRecipe] = useState<Recipe | null>(null)
   const [activeTab, setActiveTab] = useState<RecipeTab>('mine')
   const [showAllergens, setShowAllergens] = useState(false)
+  const [highlightId, setHighlightId] = useState<string | null>(null)
+  const highlightRef = useRef<HTMLDivElement>(null)
+
+  // Handle navigation from Menu → view recipe
+  useEffect(() => {
+    const state = location.state as { highlightRecipe?: string } | null
+    if (state?.highlightRecipe && recipes.length > 0) {
+      const recipe = recipes.find(r => r.id === state.highlightRecipe)
+      if (recipe) {
+        setActiveTab(recipe.is_default ? 'default' : 'mine')
+        setHighlightId(recipe.id)
+        // Clear the state so it doesn't re-trigger
+        window.history.replaceState({}, '')
+      }
+    }
+  }, [location.state, recipes])
+
+  // Scroll to highlighted recipe
+  useEffect(() => {
+    if (highlightId && highlightRef.current) {
+      highlightRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      const timer = setTimeout(() => setHighlightId(null), 3000)
+      return () => clearTimeout(timer)
+    }
+  }, [highlightId])
 
   const userRecipes = recipes.filter(r => !r.is_default)
   const defaultRecipes = recipes.filter(r => r.is_default)
@@ -118,7 +145,13 @@ export function RecipesPage({ householdId }: RecipesPageProps) {
       ) : (
         <div className="space-y-2">
           {displayedRecipes.map(recipe => (
-            <div key={recipe.id} className="bg-surface rounded-2xl border border-line p-4 pressable shadow-[var(--shadow-card)]">
+            <div
+              key={recipe.id}
+              ref={highlightId === recipe.id ? highlightRef : undefined}
+              className={`bg-surface rounded-2xl border p-4 pressable shadow-[var(--shadow-card)] transition-all duration-500 ${
+                highlightId === recipe.id ? 'border-accent ring-2 ring-accent/30 bg-accent-soft/30' : 'border-line'
+              }`}
+            >
               <div className="flex items-start justify-between">
                 <div className="flex items-start gap-3 flex-1">
                   {recipe.icon && (
