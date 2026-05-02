@@ -28,6 +28,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
   const [editingSlot, setEditingSlot] = useState<{ day: number; meal: MealType; addingExtra?: boolean } | null>(null)
   const [searchQuery, setSearchQuery] = useState('')
   const [categoryFilter, setCategoryFilter] = useState<string | null>(null)
+  const [sourceFilter, setSourceFilter] = useState<'all' | 'mine' | 'planeat'>('all')
   const [customMeal, setCustomMeal] = useState('')
   const [saving, setSaving] = useState(false)
 
@@ -87,6 +88,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
     setEditingSlot(null)
     setSearchQuery('')
     setCategoryFilter(null)
+    setSourceFilter('all')
     setSaving(false)
   }
 
@@ -104,13 +106,14 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
     return matchesSearch && matchesCategory
   })
 
-  const defaultRecipes = filteredRecipes.filter(r => r.is_default)
-  const userRecipes = filteredRecipes.filter(r => !r.is_default)
+  const defaultRecipes = sourceFilter === 'mine' ? [] : filteredRecipes.filter(r => r.is_default)
+  const userRecipes = sourceFilter === 'planeat' ? [] : filteredRecipes.filter(r => !r.is_default)
 
   const openSlotEditor = (day: number, meal: MealType, addingExtra?: boolean) => {
     setEditingSlot({ day, meal, addingExtra })
     setSearchQuery('')
     setCategoryFilter(null)
+    setSourceFilter('all')
     setCustomMeal('')
   }
 
@@ -401,9 +404,9 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
 
       {/* Recipe selector modal */}
       {editingSlot && (
-        <div className="fixed inset-0 bg-black/40 z-50 flex items-end sm:items-center justify-center animate-fade" onClick={() => !saving && setEditingSlot(null)}>
+        <div className="fixed inset-0 bg-black/40 z-[60] flex items-end sm:items-center justify-center animate-fade" onClick={() => !saving && setEditingSlot(null)}>
           <div
-            className="bg-surface w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[70vh] flex flex-col animate-slide-up"
+            className="bg-surface w-full sm:max-w-md sm:rounded-2xl rounded-t-2xl max-h-[85vh] flex flex-col animate-slide-up mb-[env(safe-area-inset-bottom)]"
             onClick={e => e.stopPropagation()}
           >
             <div className="p-4 border-b border-line-2">
@@ -419,6 +422,25 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
                 className="mt-2 w-full px-3 py-2 border border-line rounded-xl text-sm bg-surface-2 focus:bg-surface focus:outline-none focus:ring-2 focus:ring-accent"
                 autoFocus
               />
+              {/* Source filter */}
+              <div className="flex gap-1.5 mt-2">
+                {([
+                  { key: 'all' as const, label: t('recipeCat.all') },
+                  { key: 'mine' as const, label: t('menu.myRecipes') },
+                  { key: 'planeat' as const, label: t('menu.planeatRecipes') },
+                ] as const).map(({ key, label }) => (
+                  <button
+                    key={key}
+                    onClick={() => setSourceFilter(key)}
+                    className={`shrink-0 px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors pressable ${
+                      sourceFilter === key ? 'bg-accent text-white border-accent' : 'bg-surface border-line text-muted'
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+              {/* Category filter */}
               <div className="flex gap-1.5 mt-2 overflow-x-auto no-scrollbar">
                 <button
                   onClick={() => setCategoryFilter(null)}
@@ -449,7 +471,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
               )}
               {!saving && userRecipes.length > 0 && (
                 <>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-2 px-3 py-1.5 font-semibold">{t('menu.myRecipes')}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-accent-strong px-3 py-1.5 font-semibold">{t('menu.myRecipes')}</p>
                   {userRecipes.map(recipe => (
                     <button
                       key={recipe.id}
@@ -471,7 +493,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
               )}
               {!saving && defaultRecipes.length > 0 && (
                 <>
-                  <p className="text-[10px] uppercase tracking-wider text-muted-2 px-3 py-1.5 font-semibold mt-1">{t('menu.planeatRecipes')}</p>
+                  <p className="text-[10px] uppercase tracking-wider text-accent-strong px-3 py-1.5 font-semibold mt-1">{t('menu.planeatRecipes')}</p>
                   {defaultRecipes.map(recipe => (
                     <button
                       key={recipe.id}
