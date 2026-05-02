@@ -53,12 +53,12 @@ export function RecipesPage({ householdId }: RecipesPageProps) {
 
   const displayedRecipes = activeTab === 'mine' ? userRecipes : defaultRecipes
 
-  const handleSave = async (name: string, ingredients: string[], icon?: string) => {
+  const handleSave = async (name: string, ingredients: string[], icon?: string, category?: string) => {
     if (editingRecipe) {
-      await updateRecipe(editingRecipe.id, name, ingredients, icon)
+      await updateRecipe(editingRecipe.id, name, ingredients, icon, category)
       setEditingRecipe(null)
     } else {
-      await addRecipe(name, ingredients, icon)
+      await addRecipe(name, ingredients, icon, category)
       setShowForm(false)
     }
   }

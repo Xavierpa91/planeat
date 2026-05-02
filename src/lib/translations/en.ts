@@ -63,6 +63,7 @@ export const en: Record<string, string> = {
   'recipes.noDefaults': 'No default recipes',
   'recipes.deleteConfirm': 'Delete',
   'recipes.showAllergens': 'Show allergens',
+  'recipes.category': 'Category',
 
   // Recipe form
   'recipeForm.name': 'Recipe name',

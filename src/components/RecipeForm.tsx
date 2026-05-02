@@ -1,20 +1,34 @@
 import { useState, useRef, useEffect } from 'react'
 import { Plus, X, Save } from 'lucide-react'
 import { FoodIcon, FOOD_ICONS } from './FoodIcon'
+import { useI18n } from '../lib/i18n'
 import type { Recipe } from '../types'
+
+const RECIPE_CATEGORIES = ['Carnes', 'Pescados', 'Legumbres', 'Pasta y Arroces', 'Ensaladas', 'Huevos', 'Sopas y Cremas'] as const
+const CATEGORY_KEYS: Record<string, string> = {
+  'Carnes': 'recipeCat.carnes',
+  'Pescados': 'recipeCat.pescados',
+  'Legumbres': 'recipeCat.legumbres',
+  'Pasta y Arroces': 'recipeCat.pasta',
+  'Ensaladas': 'recipeCat.ensaladas',
+  'Huevos': 'recipeCat.huevos',
+  'Sopas y Cremas': 'recipeCat.sopas',
+}
 
 interface RecipeFormProps {
   recipe?: Recipe
-  onSave: (name: string, ingredients: string[], icon?: string) => Promise<void>
+  onSave: (name: string, ingredients: string[], icon?: string, category?: string) => Promise<void>
   onCancel: () => void
 }
 
 export function RecipeForm({ recipe, onSave, onCancel }: RecipeFormProps) {
+  const { t } = useI18n()
   const [name, setName] = useState(recipe?.name ?? '')
   const [ingredients, setIngredients] = useState<string[]>(
     recipe?.ingredients?.map(i => i.name) ?? ['']
   )
   const [icon, setIcon] = useState<string>(recipe?.icon ?? '')
+  const [category, setCategory] = useState<string>(recipe?.category ?? '')
   const [saving, setSaving] = useState(false)
   const ingredientRefs = useRef<(HTMLInputElement | null)[]>([])
 
@@ -32,7 +46,7 @@ export function RecipeForm({ recipe, onSave, onCancel }: RecipeFormProps) {
 
     setSaving(true)
     const validIngredients = ingredients.filter(i => i.trim())
-    await onSave(name.trim(), validIngredients, icon || undefined)
+    await onSave(name.trim(), validIngredients, icon || undefined, category || undefined)
     setSaving(false)
   }
 
@@ -75,6 +89,24 @@ export function RecipeForm({ recipe, onSave, onCancel }: RecipeFormProps) {
               }`}
             >
               <FoodIcon kind={kind} size={18} />
+            </button>
+          ))}
+        </div>
+      </div>
+
+      <div>
+        <label className="block text-sm font-semibold text-ink mb-2">{t('recipes.category')}</label>
+        <div className="flex flex-wrap gap-1.5">
+          {RECIPE_CATEGORIES.map(cat => (
+            <button
+              key={cat}
+              type="button"
+              onClick={() => setCategory(category === cat ? '' : cat)}
+              className={`px-2.5 py-1 rounded-full text-xs font-semibold border transition-colors pressable ${
+                category === cat ? 'bg-accent text-white border-accent' : 'bg-bg border-line text-muted hover:text-ink'
+              }`}
+            >
+              {t(CATEGORY_KEYS[cat])}
             </button>
           ))}
         </div>

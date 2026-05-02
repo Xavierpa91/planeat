@@ -52,11 +52,12 @@ export function useRecipes(householdId: string | undefined) {
 
   const recipes = [...userRecipes, ...defaultRecipes]
 
-  const addRecipe = async (name: string, ingredients: string[], icon?: string) => {
+  const addRecipe = async (name: string, ingredients: string[], icon?: string, category?: string) => {
     if (!householdId) return
 
     const insertData: Record<string, string> = { name, household_id: householdId }
     if (icon) insertData.icon = icon
+    if (category) insertData.category = category
 
     const { data: recipe, error } = await supabase
       .from('recipes')
@@ -76,9 +77,10 @@ export function useRecipes(householdId: string | undefined) {
     return recipe
   }
 
-  const updateRecipe = async (id: string, name: string, ingredients: string[], icon?: string) => {
+  const updateRecipe = async (id: string, name: string, ingredients: string[], icon?: string, category?: string) => {
     const updateData: Record<string, string | null> = { name }
     updateData.icon = icon ?? null
+    updateData.category = category ?? null
 
     await supabase.from('recipes').update(updateData).eq('id', id)
 
