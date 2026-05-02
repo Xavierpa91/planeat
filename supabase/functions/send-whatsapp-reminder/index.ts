@@ -118,11 +118,19 @@ async function getUserHousehold(userId: string): Promise<string | null> {
 
 Deno.serve(async (_req) => {
   try {
-    // Convert UTC to Europe/Madrid time
+    // Convert UTC to Europe/Madrid time using Intl (reliable in Deno)
     const now = new Date()
-    const madridTime = new Date(now.toLocaleString('en-US', { timeZone: 'Europe/Madrid' }))
-    const currentHour = madridTime.getHours()
-    const currentDay = madridTime.getDay()
+    const madridParts = new Intl.DateTimeFormat('en-US', {
+      timeZone: 'Europe/Madrid',
+      hour: 'numeric',
+      hour12: false,
+      weekday: 'short',
+    }).formatToParts(now)
+    const currentHour = parseInt(madridParts.find(p => p.type === 'hour')?.value ?? '0')
+    const dayMap: Record<string, number> = { Sun: 0, Mon: 1, Tue: 2, Wed: 3, Thu: 4, Fri: 5, Sat: 6 }
+    const currentDay = dayMap[madridParts.find(p => p.type === 'weekday')?.value ?? 'Mon'] ?? 1
+
+    console.log(`Madrid time: hour=${currentHour}, day=${currentDay} (UTC: ${now.toISOString()})`)
 
     // Fetch all whatsapp configs
     const { data: configs, error } = await supabase
@@ -143,9 +151,9 @@ Deno.serve(async (_req) => {
       const householdId = await getUserHousehold(config.user_id)
       if (!householdId) continue
 
-      const today = madridTime
+      const today = now
       const weekStart = formatDate(getMonday(today))
-      const dayOfWeek = (today.getDay() + 6) % 7 // Convert to Mon=0
+      const dayOfWeek = (currentDay + 6) % 7 // Convert to Mon=0 (currentDay already in Madrid tz)
 
       // Daily reminder (check day is in daily_days)
       const activeDays = config.daily_days ?? [1, 2, 3, 4, 5]
