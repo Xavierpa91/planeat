@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { ChevronLeft, ChevronRight, BarChart3 } from 'lucide-react'
 import { ShoppingList } from '../components/ShoppingList'
 import { useMenu } from '../hooks/useMenu'
-import { getMonday, shiftWeek, formatWeekRange } from '../lib/week'
+import { getMonday, shiftWeek, formatWeekRange, formatDate } from '../lib/week'
 import { useI18n } from '../lib/i18n'
 
 interface ShoppingPageProps {
@@ -64,7 +64,7 @@ export function ShoppingPage({ householdId }: ShoppingPageProps) {
           <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
         </div>
       ) : (
-        <ShoppingList ingredients={ingredients} showChart={showChart} />
+        <ShoppingList ingredients={ingredients} showChart={showChart} weekKey={formatDate(currentWeek)} />
       )}
     </div>
   )

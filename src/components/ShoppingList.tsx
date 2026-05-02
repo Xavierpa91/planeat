@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import {
   Check, Copy, Share2, ChevronDown, Plus, X,
   Beef, Fish, Milk, Leaf, Apple, GlassWater,
@@ -25,17 +25,59 @@ const CATEGORY_ICONS: Record<string, LucideIcon> = {
 interface ShoppingListProps {
   ingredients: string[]
   showChart?: boolean
+  weekKey?: string
 }
 
-export function ShoppingList({ ingredients, showChart }: ShoppingListProps) {
+function loadState(weekKey: string) {
+  try {
+    const raw = localStorage.getItem(`planeat-shopping-${weekKey}`)
+    if (!raw) return null
+    const data = JSON.parse(raw)
+    return {
+      checked: new Set<string>(data.checked ?? []),
+      extraItems: data.extraItems ?? [] as string[],
+      removedItems: new Set<string>(data.removedItems ?? []),
+    }
+  } catch { return null }
+}
+
+function saveState(weekKey: string, checked: Set<string>, extraItems: string[], removedItems: Set<string>) {
+  localStorage.setItem(`planeat-shopping-${weekKey}`, JSON.stringify({
+    checked: [...checked],
+    extraItems,
+    removedItems: [...removedItems],
+  }))
+}
+
+export function ShoppingList({ ingredients, showChart, weekKey }: ShoppingListProps) {
   const { t } = useI18n()
-  const [checked, setChecked] = useState<Set<string>>(new Set())
+  const storageKey = weekKey ?? 'current'
+  const [checked, setChecked] = useState<Set<string>>(() => loadState(storageKey)?.checked ?? new Set())
   const [collapsed, setCollapsed] = useState<Set<string>>(new Set())
   const [copied, setCopied] = useState(false)
   const [shared, setShared] = useState(false)
-  const [extraItems, setExtraItems] = useState<string[]>([])
-  const [removedItems, setRemovedItems] = useState<Set<string>>(new Set())
+  const [extraItems, setExtraItems] = useState<string[]>(() => loadState(storageKey)?.extraItems ?? [])
+  const [removedItems, setRemovedItems] = useState<Set<string>>(() => loadState(storageKey)?.removedItems ?? new Set())
   const [newItem, setNewItem] = useState('')
+
+  // Reload state when week changes
+  useEffect(() => {
+    const saved = loadState(storageKey)
+    if (saved) {
+      setChecked(saved.checked)
+      setExtraItems(saved.extraItems)
+      setRemovedItems(saved.removedItems)
+    } else {
+      setChecked(new Set())
+      setExtraItems([])
+      setRemovedItems(new Set())
+    }
+  }, [storageKey])
+
+  // Persist on changes
+  useEffect(() => {
+    saveState(storageKey, checked, extraItems, removedItems)
+  }, [storageKey, checked, extraItems, removedItems])
 
   const toggleItem = (item: string) => {
     const next = new Set(checked)
