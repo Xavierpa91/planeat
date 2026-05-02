@@ -32,6 +32,14 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
   const [customMeal, setCustomMeal] = useState('')
   const [saving, setSaving] = useState(false)
 
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (editingSlot) {
+      document.body.style.overflow = 'hidden'
+      return () => { document.body.style.overflow = '' }
+    }
+  }, [editingSlot])
+
   // Day focus layout state
   const [selectedDay, setSelectedDay] = useState(() => {
     if (!weekStart) return 0
@@ -463,7 +471,7 @@ export function WeekGrid({ slots, recipes, activeMealTypes, layout, weekStart, o
                 ))}
               </div>
             </div>
-            <div className="overflow-y-auto flex-1 p-2">
+            <div className="overflow-y-auto flex-1 p-2 overscroll-contain">
               {saving && (
                 <div className="flex justify-center py-4">
                   <div className="w-6 h-6 border-2 border-accent border-t-transparent rounded-full animate-spin" />

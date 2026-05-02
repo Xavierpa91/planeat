@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from 'react'
 import { supabase } from '../lib/supabase'
-import { formatDate } from '../lib/week'
+import { formatDate, getMonday } from '../lib/week'
 import type { WeeklyMenu, MenuSlot, MealType } from '../types'
 
 export function useMenu(householdId: string | undefined, weekStart: Date) {
@@ -205,9 +205,21 @@ export function useMenu(householdId: string | undefined, weekStart: Date) {
   }
 
   // Get all ingredients from the week's menu (including extras)
+  // Excludes days that have already passed
   const getWeekIngredients = (): string[] => {
+    const today = new Date()
+    today.setHours(0, 0, 0, 0)
+    const todayDow = (today.getDay() + 6) % 7 // Mon=0 ... Sun=6
+
+    const weekStartDate = new Date(weekStart)
+    weekStartDate.setHours(0, 0, 0, 0)
+    const isCurrentWeek = weekStartDate.getTime() === new Date(getMonday(today)).getTime()
+
     const ingredients: string[] = []
     for (const slot of slots) {
+      // Skip past days in the current week
+      if (isCurrentWeek && slot.day_of_week < todayDow) continue
+
       if (slot.recipe?.ingredients) {
         for (const ing of slot.recipe.ingredients) {
           ingredients.push(ing.name)
